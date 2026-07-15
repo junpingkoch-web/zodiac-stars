@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zodiac &amp; Stars – Chinesisches Tierkreiszeichen &amp; Sternzeichen Rechner</title>
+<meta name="description" content="Zodiac & Stars: Gib dein Geburtsdatum ein und entdecke dein chinesisches Tierkreiszeichen (1900–2026), dein westliches Sternzeichen und einen verspielten Jahres- und Monatsausblick. Zweisprachig Deutsch/Englisch.">
+<style>
+  :root{
+    --bg:#FBF5FF;
+    --surface:#FFFFFF;
+    --surface-2:#F1E6FB;
+    --border:#E4D3F5;
+    --ink:#2B2140;
+    --ink-soft:#6B5D82;
+    --accent:#7B4FCB;
+    --accent-strong:#5B35A6;
+    --accent-tint:#EFE3FB;
+    --cta:#F0A83D;
+    --cta-strong:#D98F22;
+    --cta-ink:#2B1800;
+    --danger:#C0456F;
+    --segmented-ink:#FFFFFF;
+    --font-display: ui-serif, Georgia, "Iowan Old Style", "Noto Serif SC", "Songti SC", serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    --font-mono: ui-monospace, "SFMono-Regular", Consolas, "Cascadia Mono", monospace;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(43,33,64,0.08), 0 10px 26px -10px rgba(43,33,64,0.25);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#171227;
+      --surface:#211A36;
+      --surface-2:#27203E;
+      --border:#3A3156;
+      --ink:#F1ECFB;
+      --ink-soft:#B3A6D1;
+      --accent:#B79AF0;
+      --accent-strong:#D3BFFA;
+      --accent-tint:#2E2650;
+      --cta:#F3B65C;
+      --cta-strong:#F8CC85;
+      --cta-ink:#2B1800;
+      --danger:#F08AA8;
+      --segmented-ink:#171227;
+      --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 12px 30px -10px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#171227; --surface:#211A36; --surface-2:#27203E; --border:#3A3156;
+    --ink:#F1ECFB; --ink-soft:#B3A6D1; --accent:#B79AF0; --accent-strong:#D3BFFA;
+    --accent-tint:#2E2650; --cta:#F3B65C; --cta-strong:#F8CC85; --cta-ink:#2B1800; --danger:#F08AA8;
+    --segmented-ink:#171227;
+    --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 12px 30px -10px rgba(0,0,0,0.6);
+  }
+  :root[data-theme="light"]{
+    --bg:#FBF5FF; --surface:#FFFFFF; --surface-2:#F1E6FB; --border:#E4D3F5;
+    --ink:#2B2140; --ink-soft:#6B5D82; --accent:#7B4FCB; --accent-strong:#5B35A6;
+    --accent-tint:#EFE3FB; --cta:#F0A83D; --cta-strong:#D98F22; --cta-ink:#2B1800; --danger:#C0456F;
+    --segmented-ink:#FFFFFF;
+    --shadow: 0 1px 2px rgba(43,33,64,0.08), 0 10px 26px -10px rgba(43,33,64,0.25);
+  }
+
+  *{ box-sizing:border-box; }
+  body{ margin:0; }
+  .page{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.6;
+    min-height:100%;
+  }
+  ::selection{ background:var(--accent-tint); color:var(--accent-strong); }
+  a{ color:var(--accent-strong); }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+
+  .shell{ max-width:920px; margin:0 auto; padding:0 20px 64px; }
+  .wide{ max-width:960px; }
+
+  .topbar{
+    max-width:920px; margin:0 auto; padding:14px 20px 0; display:flex; justify-content:flex-end;
+  }
+  #langBtn{
+    font-family:var(--font-mono); font-size:12.5px; letter-spacing:.06em; font-weight:700;
+    background:var(--surface); color:var(--accent-strong); border:1px solid var(--border);
+    border-radius:999px; padding:7px 14px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;
+  }
+  #langBtn:hover{ background:var(--accent-tint); border-color:var(--accent); }
+
+  header.site{
+    padding:20px 20px 26px;
+    text-align:center;
+  }
+  h1.title{
+    font-family:var(--font-display);
+    font-size:clamp(30px,5vw,46px);
+    font-weight:600;
+    margin:0 0 10px;
+    text-wrap:balance;
+    letter-spacing:-0.01em;
+  }
+  h1.title .title-text{
+    background:linear-gradient(100deg, var(--accent-strong), var(--cta-strong));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  h1.title .title-icon{
+    font-size:0.85em; vertical-align:-0.08em; display:inline-block;
+  }
+  h1.title .title-icon.left{ margin-right:14px; }
+  h1.title .title-icon.right{ margin-left:14px; }
+  p.subtitle{
+    color:var(--accent-strong);
+    font-size:19px;
+    font-weight:700;
+    max-width:48ch;
+    margin:0 auto;
+    text-wrap:balance;
+  }
+
+  .ad-slot{ max-width:920px; margin:28px auto; padding:0 20px; }
+  .ad-slot .ad-box{
+    border:1.5px dashed var(--border); border-radius:var(--radius);
+    background:var(--surface-2); color:var(--ink-soft);
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    padding:14px; min-height:90px;
+  }
+  .ad-slot.in-content .ad-box{ min-height:110px; }
+  .ad-slot .ad-box small{
+    display:block; font-family:var(--font-body); text-transform:none; letter-spacing:0;
+    font-size:12px; margin-top:4px; opacity:.85;
+  }
+
+  .tool-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:20px;
+    box-shadow:var(--shadow); padding:30px;
+  }
+  @media (max-width:560px){ .tool-card{ padding:20px 16px; } }
+
+  /* wheel */
+  .wheel-wrap{ max-width:920px; margin:0 auto 8px; position:relative; }
+  .wheel-wrap svg{ width:100%; height:auto; display:block; }
+  .wheel-caption{
+    text-align:center; font-size:12.5px; color:var(--ink-soft); margin:6px 0 0;
+    font-family:var(--font-mono); letter-spacing:.03em;
+  }
+
+  .legend-heading{
+    font-family:var(--font-display); font-size:15.5px; margin:30px 0 12px; text-align:center; color:var(--ink-soft);
+  }
+  .legend-grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px;
+    font-size:12.5px;
+  }
+  .legend-item{
+    display:flex; align-items:baseline; gap:6px; background:var(--surface-2); border:1px solid var(--border);
+    border-radius:8px; padding:6px 10px;
+  }
+  .legend-item .le-emoji{ font-size:15px; }
+  .legend-item .le-name{ font-weight:700; margin-right:2px; }
+  .legend-item .le-years{ color:var(--ink-soft); font-family:var(--font-mono); font-size:11px; }
+
+  /* birth date form */
+  .date-form-hero{
+    background:linear-gradient(135deg, var(--accent-tint), var(--surface) 70%);
+    border:1.5px solid var(--accent);
+    border-radius:18px;
+    padding:22px 20px 26px;
+    margin-bottom:30px;
+    box-shadow:var(--shadow);
+  }
+  .date-form-heading{
+    font-family:var(--font-display); font-size:20px; text-align:center; margin:0 0 16px; color:var(--accent-strong);
+  }
+  .date-form{
+    margin-top:0; display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; justify-content:center;
+  }
+  .date-field{ display:flex; flex-direction:column; gap:6px; }
+  .date-field label{ font-size:12.5px; font-weight:600; color:var(--ink-soft); }
+  .date-field select{
+    border:1px solid var(--border); border-radius:9px; background:var(--bg); color:var(--ink);
+    font-family:var(--font-body); font-size:15px; padding:10px 12px; min-width:110px;
+  }
+  button.btn{
+    font-family:var(--font-body); font-weight:700; font-size:15px;
+    border-radius:999px; padding:13px 26px; cursor:pointer; border:1px solid transparent;
+    transition:transform .12s ease;
+  }
+  button.btn:active{ transform:scale(.98); }
+  @media (prefers-reduced-motion:reduce){ button.btn:active{ transform:none; } }
+  button.btn.primary{ background:var(--cta); color:var(--cta-ink); }
+  button.btn.primary:hover{ background:var(--cta-strong); }
+
+  /* result card */
+  #results{ margin-top:32px; }
+  .placeholder-note{
+    text-align:center; color:var(--ink-soft); font-size:14px; padding:18px 10px;
+    border:1.5px dashed var(--border); border-radius:14px; background:var(--surface-2);
+  }
+  .result-card{
+    background:linear-gradient(160deg, var(--accent-tint), var(--surface) 55%);
+    border:1px solid var(--border); border-radius:18px; padding:24px;
+  }
+  .result-grid{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  @media (max-width:560px){ .result-grid{ grid-template-columns:1fr; } }
+  .result-block h3{
+    margin:0 0 4px; font-family:var(--font-display); font-size:19px; display:flex; align-items:center; gap:8px;
+  }
+  .result-block .kicker{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft);
+    margin:0 0 4px;
+  }
+  .result-block .big-emoji{ font-size:28px; }
+  .result-block p{ font-size:14px; margin:8px 0 0; color:var(--ink); }
+  .trait-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .trait-chip{
+    background:var(--surface); border:1px solid var(--border); border-radius:999px;
+    padding:4px 11px; font-size:12px; color:var(--accent-strong); font-weight:600;
+  }
+  .divider{ border:0; border-top:1px solid var(--border); margin:20px 0; }
+  .fortune-grid{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  @media (max-width:560px){ .fortune-grid{ grid-template-columns:1fr; } }
+  .fortune-block .kicker{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft);
+  }
+  .fortune-block p{ margin:6px 0 0; font-size:14.5px; }
+  .share-hint{
+    margin-top:20px; text-align:center; font-size:13px; color:var(--ink-soft);
+    background:var(--surface); border:1px dashed var(--border); border-radius:12px; padding:10px;
+  }
+
+  /* SEO / info content */
+  section.seo{ margin-top:56px; }
+  section.seo h2{
+    font-family:var(--font-display); font-size:23px; margin:0 0 16px;
+    border-bottom:1px solid var(--border); padding-bottom:10px;
+  }
+  .article p{ margin:0 0 12px; font-size:15px; max-width:70ch; }
+  .article .lede{ font-size:15.5px; color:var(--ink-soft); }
+  ul.rules{ padding-left:22px; display:grid; gap:10px; font-size:15px; margin:0 0 18px; }
+  .fun-disclaimer{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:14px 16px;
+    font-size:14px; color:var(--ink-soft);
+  }
+
+  footer.site{
+    margin-top:56px; padding-top:24px; border-top:1px solid var(--border);
+    display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    font-size:12.5px; color:var(--ink-soft);
+  }
+
+  .tip-btn{
+    position:fixed; right:18px; bottom:18px; z-index:40;
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--cta); color:var(--cta-ink); text-decoration:none;
+    font-family:var(--font-body); font-weight:700; font-size:14px;
+    padding:11px 16px; border-radius:999px; box-shadow:var(--shadow);
+    border:1px solid rgba(0,0,0,0.06);
+  }
+  .tip-btn:hover{ background:var(--cta-strong); }
+  @media (max-width:560px){ .tip-btn{ right:14px; bottom:14px; padding:10px 14px; font-size:13px; } }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="topbar"><button type="button" id="langBtn">🌐 EN</button></div>
+
+  <header class="site">
+    <h1 class="title"><span class="title-icon left">🔮</span><span class="title-text">Zodiac &amp; Stars</span><span class="title-icon right">✨</span></h1>
+    <p class="subtitle" data-i18n="tagline">Dein chinesisches Tierkreiszeichen trifft dein Sternzeichen — verspielt, hübsch und in Sekunden berechnet.</p>
+  </header>
+
+  <div class="ad-slot banner">
+    <div class="ad-box" data-i18n="adTop">
+      Anzeige (Banner oben) · Platz für AdSense
+      <small><!-- Nach Freischaltung hier den AdSense-Code einfügen, z. B.:
+        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXX"
+             data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      --><span data-i18n="adSize">Empfohlene Größe: 728×90 / responsive</span></small>
+    </div>
+  </div>
+
+  <main class="shell">
+    <div class="tool-card">
+
+      <div class="date-form-hero">
+        <h2 class="date-form-heading" data-i18n="birthdateHeading">Dein Geburtsdatum</h2>
+        <div class="date-form">
+          <div class="date-field">
+            <label for="daySel" data-i18n="dayLabel">Tag</label>
+            <select id="daySel"></select>
+          </div>
+          <div class="date-field">
+            <label for="monthSel" data-i18n="monthLabel">Monat</label>
+            <select id="monthSel"></select>
+          </div>
+          <div class="date-field">
+            <label for="yearSel" data-i18n="yearLabel">Jahr</label>
+            <select id="yearSel"></select>
+          </div>
+          <button type="button" class="btn primary" id="calcBtn" data-i18n="calcBtn">Berechnen ✨</button>
+        </div>
+      </div>
+
+      <div class="wheel-wrap">
+        <svg id="wheelSvg" viewBox="0 0 1790 1790" role="img" aria-labelledby="wheelTitle"></svg>
+      </div>
+      <p class="wheel-caption" data-i18n="wheelCaption">Innen: die 12 chinesischen Tierkreiszeichen · Außen: die 12 Sternzeichen</p>
+
+      <h2 class="legend-heading" data-i18n="legendHeading">Geburtsjahre 1900–2026 auf einen Blick</h2>
+      <div class="legend-grid" id="legendGrid"></div>
+
+      <div id="results">
+        <p class="placeholder-note" id="placeholderNote" data-i18n="placeholderNote">Wähle dein Geburtsdatum und klicke auf „Berechnen ✨“, um dein Ergebnis zu sehen.</p>
+      </div>
+    </div>
+  </main>
+
+  <div class="ad-slot in-content">
+    <div class="ad-box" data-i18n="adMid">
+      Anzeige (im Inhalt) · Platz für AdSense
+      <small data-i18n="adMidSize">Empfohlen zwischen Ergebnis und Erklärung, responsive / 336×280</small>
+    </div>
+  </div>
+
+  <main class="shell wide">
+    <section class="seo article" id="usage">
+      <h2 data-i18n="usageHeading">Spielregeln &amp; gut zu wissen</h2>
+      <p class="lede" data-i18n="usageLede">Zodiac &amp; Stars verbindet zwei jahrtausendealte Traditionen zu einem verspielten Mini-Orakel.</p>
+      <ul class="rules">
+        <li data-i18n="rule1">Gib dein Geburtsdatum ein (Jahre 1900–2026 werden unterstützt) und klicke auf „Berechnen ✨“.</li>
+        <li data-i18n="rule2">Du erhältst dein chinesisches Tierkreiszeichen, dein westliches Sternzeichen sowie einen Ausblick für Jahr und Monat.</li>
+        <li data-i18n="rule3">Mach einen Screenshot deines Ergebnisses und teile es auf LinkedIn, Instagram oder Facebook — markier gern Freunde, die auch mitmachen sollen!</li>
+        <li data-i18n="rule4">Alle Berechnungen laufen direkt in deinem Browser. Es werden keine Geburtsdaten gespeichert oder irgendwohin übertragen.</li>
+      </ul>
+      <div class="fun-disclaimer" data-i18n="disclaimer">
+        Nur zur Unterhaltung: Die Texte basieren auf traditionellem Volksglauben, nicht auf wissenschaftlicher Astrologie oder Astronomie. Bitte nicht als Grundlage für wichtige Entscheidungen verwenden — einfach Spaß daran haben! 🌙✨
+      </div>
+    </section>
+
+    <div class="ad-slot banner" style="margin-left:0;margin-right:0;padding:0;max-width:none;">
+      <div class="ad-box" data-i18n="adBottom">
+        Anzeige (Banner unten) · Platz für AdSense
+        <small data-i18n="adBottomSize">Empfohlene Größe: 728×90 / responsive, vor dem Footer</small>
+      </div>
+    </div>
+
+    <footer class="site">
+      <span data-i18n="footerText">© <span id="year"></span> Zodiac &amp; Stars · Nur zur Unterhaltung, keine astrologische Beratung</span>
+      <span>Zodiac &amp; Stars</span>
+    </footer>
+  </main>
+
+  <a class="tip-btn" id="tipBtn" href="https://www.buymeacoffee.com/junping.koch" target="_blank" rel="noopener noreferrer" data-i18n="tipBtn">☕ Spendier einen Kaffee</a>
+</div>
+
+<script>
+(function(){
+  // ---------- data ----------
+  var ANIMALS = [
+    { key:'rat', emoji:'🐀', de:'Ratte', en:'Rat', years:[1900,1912,1924,1936,1948,1960,1972,1984,1996,2008,2020],
+      traitsDe:['Klug','Findig','Charmant','Anpassungsfähig'], traitsEn:['Clever','Resourceful','Charming','Adaptable'],
+      descDe:'Ratten sind schlau und aufmerksam und erkennen Chancen, bevor andere sie überhaupt bemerken. Sie sind gesellig und charmant und knüpfen leicht Kontakte, doch ihr rastloser Geist sehnt sich nach Abwechslung.',
+      descEn:'Rats are quick-witted and sharp observers who can spot an opportunity before anyone else. Sociable and charming, they build networks easily, though their restless minds crave variety.',
+      fortuneDe:'Dieses Jahr begünstigt deine Intuition — vertrau der leisen Ahnung, die dich immer wieder anstupst, meistens liegt sie richtig.',
+      fortuneEn:'This year favours your instincts — trust the quiet hunch that keeps nudging you, it\'s usually right.' },
+    { key:'ox', emoji:'🐂', de:'Büffel', en:'Ox', years:[1901,1913,1925,1937,1949,1961,1973,1985,1997,2009,2021],
+      traitsDe:['Beständig','Ehrlich','Fleißig','Zuverlässig'], traitsEn:['Steady','Honest','Diligent','Dependable'],
+      descDe:'Büffel sind das verlässliche Rückgrat jeder Gruppe — geduldig, fleißig und ehrlich bis auf die Knochen. Sie bevorzugen bewährte Wege statt Abkürzungen und gewinnen Vertrauen durch Beständigkeit.',
+      descEn:'Oxen are the reliable backbone of any group — patient, hardworking and honest to a fault. They prefer proven methods over shortcuts and earn trust through consistency.',
+      fortuneDe:'Langsam, aber sicher gewinnt dieses Jahr — ein geduldiger Plan von früher zahlt sich jetzt endlich aus.',
+      fortuneEn:'Slow and steady wins this year — a patient plan you started long ago is finally paying off.' },
+    { key:'tiger', emoji:'🐯', de:'Tiger', en:'Tiger', years:[1902,1914,1926,1938,1950,1962,1974,1986,1998,2010,2022],
+      traitsDe:['Mutig','Selbstbewusst','Ehrgeizig','Leidenschaftlich'], traitsEn:['Brave','Confident','Competitive','Passionate'],
+      descDe:'Tiger betreten einen Raum, als würde er ihnen gehören — mutig, anziehend und unübersehbar. Ihr Ehrgeiz treibt große Pläne an, auch wenn Geduld nicht immer ihre Stärke ist.',
+      descEn:'Tigers walk into a room like they own it — bold, magnetic and impossible to ignore. Their competitive streak fuels big ambitions, though patience isn\'t always their strong suit.',
+      fortuneDe:'Ein mutiger Schritt, den du aufgeschoben hast, lohnt sich dieses Jahr — das Rampenlicht ist auf deiner Seite.',
+      fortuneEn:'A bold move you\'ve been putting off is worth the risk this year — the spotlight favours you.' },
+    { key:'rabbit', emoji:'🐰', de:'Hase', en:'Rabbit', years:[1903,1915,1927,1939,1951,1963,1975,1987,1999,2011,2023],
+      traitsDe:['Sanft','Anmutig','Freundlich','Diplomatisch'], traitsEn:['Gentle','Graceful','Kind','Diplomatic'],
+      descDe:'Hasen gehen mit stiller Eleganz durchs Leben und bevorzugen Harmonie statt Streit. Warmherzig und rücksichtsvoll sind sie der Freund, dem jeder ein Geheimnis anvertraut.',
+      descEn:'Rabbits move through life with quiet elegance, choosing harmony over conflict. Warm and considerate, they\'re the friend everyone trusts with a secret.',
+      fortuneDe:'Frieden und Geborgenheit stehen dieses Jahr im Mittelpunkt — ein ruhiges Zuhause bringt unerwartete Freude.',
+      fortuneEn:'Peace and comfort take center stage this year — a calm home life brings unexpected joy.' },
+    { key:'dragon', emoji:'🐲', de:'Drache', en:'Dragon', years:[1904,1916,1928,1940,1952,1964,1976,1988,2000,2012,2024],
+      traitsDe:['Charismatisch','Ehrgeizig','Selbstbewusst','Visionär'], traitsEn:['Charismatic','Ambitious','Confident','Visionary'],
+      descDe:'Drachen sind geborene Anführer mit einer anziehenden Ausstrahlung und großen Träumen. Selbstbewusst und großzügig inspirieren sie andere allein dadurch, dass sie an sich selbst glauben.',
+      descEn:'Dragons are natural-born leaders with a magnetic presence and larger-than-life dreams. Confident and generous, they inspire others simply by believing in themselves.',
+      fortuneDe:'Große Ambitionen bekommen dieses Jahr echten Schwung — sprich die kühne Idee laut aus, andere werden sich dahinter versammeln.',
+      fortuneEn:'Big ambitions get real momentum this year — say the bold idea out loud, people will rally behind it.' },
+    { key:'snake', emoji:'🐍', de:'Schlange', en:'Snake', years:[1905,1917,1929,1941,1953,1965,1977,1989,2001,2013,2025],
+      traitsDe:['Weise','Intuitiv','Elegant','Geheimnisvoll'], traitsEn:['Wise','Intuitive','Elegant','Mysterious'],
+      descDe:'Schlangen denken gründlich nach, bevor sie handeln, und bevorzugen stille Beobachtung statt lauter Worte. Elegant und intuitiv kennen sie oft die Antwort, bevor die Frage zu Ende gestellt ist.',
+      descEn:'Snakes think deeply before they act, preferring quiet observation to loud declarations. Elegant and intuitive, they often know the answer before the question is finished.',
+      fortuneDe:'Deine stille Strategie zahlt sich dieses Jahr aus — lass andere Lärm machen, während du vorankommst.',
+      fortuneEn:'Your quiet strategy pays off this year — let others make noise while you make progress.' },
+    { key:'horse', emoji:'🐴', de:'Pferd', en:'Horse', years:[1906,1918,1930,1942,1954,1966,1978,1990,2002,2014,2026],
+      traitsDe:['Energiegeladen','Unabhängig','Abenteuerlustig','Freiheitsliebend'], traitsEn:['Energetic','Independent','Adventurous','Free-spirited'],
+      descDe:'Pferde laufen dem Horizont entgegen, nicht vor etwas davon — angetrieben von Neugier und Freiheitsliebe. Gesellig und gut gelaunt bringen sie überall Energie mit.',
+      descEn:'Horses run toward the horizon, not away from anything — driven by curiosity and a love of freedom. Sociable and upbeat, they bring energy wherever they go.',
+      fortuneDe:'Reisen oder ein Neuanfang rufen dieses Jahr — sag Ja, bevor du es dir ausredest.',
+      fortuneEn:'Travel or a fresh start is calling this year — say yes before you talk yourself out of it.' },
+    { key:'goat', emoji:'🐐', de:'Ziege', en:'Goat', years:[1907,1919,1931,1943,1955,1967,1979,1991,2003,2015],
+      traitsDe:['Sanftmütig','Kreativ','Einfühlsam','Künstlerisch'], traitsEn:['Gentle','Creative','Empathetic','Artistic'],
+      descDe:'Ziegen haben ein weiches Herz und ein feines kreatives Gespür, das sie oft eher durch Kunst als durch Worte ausdrücken. Sanftmütig und einfühlsam brauchen sie ruhige Umgebungen, um wirklich aufzublühen.',
+      descEn:'Goats have soft hearts and sharp creative instincts, often expressing themselves through art rather than words. Gentle and empathetic, they need calm surroundings to truly thrive.',
+      fortuneDe:'Ein kreatives Projekt findet dieses Jahr endlich sein Publikum — versteck deine Arbeit nicht, zeig sie.',
+      fortuneEn:'A creative project finally finds its audience this year — don\'t hide your work, share it.' },
+    { key:'monkey', emoji:'🐵', de:'Affe', en:'Monkey', years:[1908,1920,1932,1944,1956,1968,1980,1992,2004,2016],
+      traitsDe:['Clever','Witzig','Neugierig','Verspielt'], traitsEn:['Clever','Witty','Curious','Playful'],
+      descDe:'Affen sind schnelle Denker mit einem schelmischen Humor und finden immer einen cleveren Umweg. Neugierig und verspielt langweilen sie sich schnell, wenn es nicht mehr spannend bleibt.',
+      descEn:'Monkeys are quick thinkers with a mischievous sense of humour, always finding a clever shortcut. Curious and playful, they get bored fast when things stop being interesting.',
+      fortuneDe:'Eine clevere Idee, die du fast verworfen hättest, entpuppt sich dieses Jahr als klügster Schachzug.',
+      fortuneEn:'A clever idea you almost dismissed turns out to be the smartest move this year.' },
+    { key:'rooster', emoji:'🐓', de:'Hahn', en:'Rooster', years:[1909,1921,1933,1945,1957,1969,1981,1993,2005,2017],
+      traitsDe:['Selbstbewusst','Fleißig','Ehrlich','Aufmerksam'], traitsEn:['Confident','Hardworking','Honest','Observant'],
+      descDe:'Hähne bemerken jedes Detail und stellen hohe Ansprüche an sich selbst, oft auch an andere. Selbstbewusst und fleißig sind sie stolz darauf, Dinge richtig zu machen.',
+      descEn:'Roosters notice every detail and hold themselves to a high standard, often others too. Confident and hardworking, they take pride in doing things properly.',
+      fortuneDe:'Dein Blick fürs Detail wird dieses Jahr bemerkt — die Anerkennung, die du dir verdient hast, kommt endlich an.',
+      fortuneEn:'Your attention to detail gets noticed this year — the recognition you\'ve earned is finally arriving.' },
+    { key:'dog', emoji:'🐶', de:'Hund', en:'Dog', years:[1910,1922,1934,1946,1958,1970,1982,1994,2006,2018],
+      traitsDe:['Loyal','Ehrlich','Beschützend','Vertrauenswürdig'], traitsEn:['Loyal','Honest','Protective','Trustworthy'],
+      descDe:'Hunde sind unerschütterlich loyale Freunde, die zu den Menschen stehen, die sie lieben, ohne zu zögern. Ehrlich und beschützend haben sie ein starkes Gerechtigkeitsgefühl.',
+      descEn:'Dogs are fiercely loyal friends who stand by the people they love, no questions asked. Honest and protective, they have a strong sense of fairness and justice.',
+      fortuneDe:'Loyalität wird dieses Jahr belohnt — ein Freund oder Partner ist genau dann für dich da, wenn es zählt.',
+      fortuneEn:'Loyalty is repaid this year — a friend or partner shows up for you exactly when it matters.' },
+    { key:'pig', emoji:'🐷', de:'Schwein', en:'Pig', years:[1911,1923,1935,1947,1959,1971,1983,1995,2007,2019],
+      traitsDe:['Großzügig','Warmherzig','Fleißig','Optimistisch'], traitsEn:['Generous','Warm-hearted','Diligent','Optimistic'],
+      descDe:'Schweine sind warmherzige, großzügige Seelen, die die einfachen Freuden des Lebens genießen und gerne teilen. Fleißig und optimistisch tragen sie selten nach und schenken schnell Vertrauen.',
+      descEn:'Pigs are warm, generous souls who enjoy life\'s simple pleasures and share them freely. Diligent and optimistic, they rarely hold a grudge and trust easily.',
+      fortuneDe:'Großzügigkeit zahlt sich dieses Jahr aus — die Freundlichkeit, die du im Stillen gegeben hast, kommt doppelt zurück.',
+      fortuneEn:'Generosity comes back around this year — the kindness you\'ve given quietly returns doubled.' }
+  ];
+
+  var SIGNS = [
+    { key:'aries', symbol:'♈', de:'Widder', en:'Aries', range:'21.3.–19.4.', rangeEn:'Mar 21–Apr 19', end:[4,19],
+      traitsDe:['Mutig','Energiegeladen','Direkt','Ehrgeizig'], traitsEn:['Bold','Energetic','Direct','Competitive'],
+      descDe:'Der Widder führt mit Feuer und Instinkt und stürzt sich in neue Herausforderungen, ohne lange zu grübeln. Direkt und energiegeladen ist er am glücklichsten, wenn es ein Ziel zu verfolgen gibt.',
+      descEn:'Aries leads with fire and instinct, diving into new challenges before overthinking them. Direct and energetic, they\'re happiest when there\'s a goal to chase.',
+      monthlyDe:'Dieser Monat belohnt schnelle Entscheidungen — die Gelegenheit, die du zuerst erkennst, ist die, die sich lohnt.',
+      monthlyEn:'This month rewards quick decisions — the opportunity you spot first is the one worth taking.' },
+    { key:'taurus', symbol:'♉', de:'Stier', en:'Taurus', range:'20.4.–20.5.', rangeEn:'Apr 20–May 20', end:[5,20],
+      traitsDe:['Geduldig','Zuverlässig','Sinnlich','Eigensinnig'], traitsEn:['Patient','Reliable','Sensual','Stubborn'],
+      descDe:'Der Stier schätzt Komfort, Qualität und Dinge, die von Dauer sind. Geduldig und bodenständig geht er sein eigenes Tempo und ändert seine Meinung nur selten.',
+      descEn:'Taurus values comfort, quality and things built to last. Patient and grounded, they move at their own pace and rarely change their mind once it\'s made up.',
+      monthlyDe:'Dieser Monat begünstigt Entschleunigung — gönn dir etwas Gutes, schöne Dinge wachsen in ihrem eigenen Tempo.',
+      monthlyEn:'This month favours slowing down — treat yourself well, good things grow at their own pace.' },
+    { key:'gemini', symbol:'♊', de:'Zwillinge', en:'Gemini', range:'21.5.–20.6.', rangeEn:'May 21–Jun 20', end:[6,20],
+      traitsDe:['Neugierig','Geistreich','Kommunikativ','Anpassungsfähig'], traitsEn:['Curious','Witty','Communicative','Adaptable'],
+      descDe:'Die Gedanken der Zwillinge springen schnell und mühelos zwischen Ideen und Gesprächen hin und her. Neugierig und kommunikativ blühen sie bei Abwechslung und neuem Wissen auf.',
+      descEn:'Gemini\'s mind moves fast, jumping between ideas and conversations with ease. Curious and communicative, they thrive on variety and new information.',
+      monthlyDe:'Dieser Monat bringt spannende Gespräche — ein beiläufiger Plausch könnte zu etwas Größerem werden.',
+      monthlyEn:'This month brings interesting conversations — a casual chat could turn into something bigger.' },
+    { key:'cancer', symbol:'♋', de:'Krebs', en:'Cancer', range:'21.6.–22.7.', rangeEn:'Jun 21–Jul 22', end:[7,22],
+      traitsDe:['Fürsorglich','Intuitiv','Loyal','Sentimental'], traitsEn:['Caring','Intuitive','Loyal','Sentimental'],
+      descDe:'Der Krebs fühlt alles zutiefst und kümmert sich mit stiller Hingabe um geliebte Menschen. Intuitiv und sentimental bedeuten ihm Zuhause und Familie mehr als jeder Status.',
+      descEn:'Cancer feels everything deeply and cares for loved ones with quiet devotion. Intuitive and sentimental, home and family matter more than status ever could.',
+      monthlyDe:'Dieser Monat begünstigt enge Bindungen — ein ehrliches Gespräch bringt dich jemandem näher, der dir wichtig ist.',
+      monthlyEn:'This month favours close bonds — a heartfelt conversation brings you closer to someone who matters.' },
+    { key:'leo', symbol:'♌', de:'Löwe', en:'Leo', range:'23.7.–22.8.', rangeEn:'Jul 23–Aug 22', end:[8,22],
+      traitsDe:['Selbstbewusst','Großzügig','Dramatisch','Warmherzig'], traitsEn:['Confident','Generous','Dramatic','Warm'],
+      descDe:'Der Löwe strahlt am hellsten vor Publikum und ist großzügig mit Liebe und Aufmerksamkeit. Selbstbewusst und warmherzig führt er mit Herz und erwartet Loyalität zurück.',
+      descEn:'Leo shines brightest in front of an audience, generous with love and attention. Confident and warm, they lead with heart and expect loyalty in return.',
+      monthlyDe:'Dieser Monat rückt dich ins Rampenlicht — nimm die Aufmerksamkeit an, du hast sie dir redlich verdient.',
+      monthlyEn:'This month puts you center stage — accept the attention, you\'ve earned every bit of it.' },
+    { key:'virgo', symbol:'♍', de:'Jungfrau', en:'Virgo', range:'23.8.–22.9.', rangeEn:'Aug 23–Sep 22', end:[9,22],
+      traitsDe:['Analytisch','Praktisch','Akribisch','Hilfsbereit'], traitsEn:['Analytical','Practical','Meticulous','Helpful'],
+      descDe:'Die Jungfrau bemerkt, was allen anderen entgeht, und behebt es still, bevor es zum Problem wird. Praktisch und hilfsbereit zeigt sie Liebe durch nützliche, durchdachte Taten.',
+      descEn:'Virgo notices what everyone else misses and quietly fixes it before it becomes a problem. Practical and helpful, they show love through useful, thoughtful actions.',
+      monthlyDe:'Dieser Monat belohnt Organisation — ein kleines System, das du jetzt einrichtest, spart dir später echte Zeit.',
+      monthlyEn:'This month rewards organisation — a small system you set up now saves real time later.' },
+    { key:'libra', symbol:'♎', de:'Waage', en:'Libra', range:'23.9.–22.10.', rangeEn:'Sep 23–Oct 22', end:[10,22],
+      traitsDe:['Diplomatisch','Charmant','Gerecht','Gesellig'], traitsEn:['Diplomatic','Charming','Fair','Social'],
+      descDe:'Die Waage sucht in allem Balance und Schönheit, von Beziehungen bis zum schön gedeckten Tisch. Diplomatisch und gesellig ist sie eine geborene Vermittlerin, die Konflikte nicht lange ertragen kann.',
+      descEn:'Libra seeks balance and beauty in everything, from relationships to a well-set table. Diplomatic and social, they\'re natural mediators who hate to see conflict linger.',
+      monthlyDe:'Dieser Monat begünstigt Partnerschaften — ein fairer Kompromiss ebnet jetzt einen deutlich leichteren Weg.',
+      monthlyEn:'This month favours partnerships — a fair compromise now sets up a much smoother path ahead.' },
+    { key:'scorpio', symbol:'♏', de:'Skorpion', en:'Scorpio', range:'23.10.–21.11.', rangeEn:'Oct 23–Nov 21', end:[11,21],
+      traitsDe:['Intensiv','Leidenschaftlich','Scharfsinnig','Zielstrebig'], traitsEn:['Intense','Passionate','Perceptive','Determined'],
+      descDe:'Der Skorpion fühlt alles intensiv und durchschaut oberflächlichen Smalltalk sofort. Leidenschaftlich und zielstrebig lässt er nicht mehr locker, sobald er sich für etwas entschieden hat.',
+      descEn:'Scorpio feels things intensely and sees straight through surface-level small talk. Passionate and determined, once they commit to something, they don\'t let go easily.',
+      monthlyDe:'Dieser Monat belohnt Fokus — das Ziel, das dich still beschäftigt, ist näher, als es scheint.',
+      monthlyEn:'This month rewards focus — the goal you\'ve been quietly obsessing over is closer than it looks.' },
+    { key:'sagittarius', symbol:'♐', de:'Schütze', en:'Sagittarius', range:'22.11.–21.12.', rangeEn:'Nov 22–Dec 21', end:[12,21],
+      traitsDe:['Abenteuerlustig','Optimistisch','Ehrlich','Freiheitsliebend'], traitsEn:['Adventurous','Optimistic','Honest','Free-spirited'],
+      descDe:'Der Schütze blickt stets zum nächsten Horizont, angetrieben von Neugier und Ehrlichkeit. Optimistisch und freiheitsliebend erkundet er lieber, als sich in Routine einzurichten.',
+      descEn:'Sagittarius is always looking toward the next horizon, driven by curiosity and honesty. Optimistic and free-spirited, they\'d rather explore than settle into routine.',
+      monthlyDe:'Dieser Monat begünstigt Entdeckungen — ein spontaner Plan gelingt besser als der, den du sorgfältig ausgearbeitet hast.',
+      monthlyEn:'This month favours exploring — a spontaneous plan turns out better than the one you carefully mapped.' },
+    { key:'capricorn', symbol:'♑', de:'Steinbock', en:'Capricorn', range:'22.12.–19.1.', rangeEn:'Dec 22–Jan 19', end:[12,31],
+      traitsDe:['Diszipliniert','Ehrgeizig','Geduldig','Verantwortungsbewusst'], traitsEn:['Disciplined','Ambitious','Patient','Responsible'],
+      descDe:'Der Steinbock erklimmt beharrlich seine langfristigen Ziele, ganz gleich wie lange es dauert. Diszipliniert und verantwortungsbewusst verdient er sich Respekt durch stille, beständige Arbeit.',
+      descEn:'Capricorn climbs steadily toward long-term goals, unbothered by how long it takes. Disciplined and responsible, they earn respect through quiet, consistent effort.',
+      monthlyDe:'Dieser Monat belohnt Geduld — stetiger Fortschritt bei einem langfristigen Ziel summiert sich still zu etwas Großem.',
+      monthlyEn:'This month rewards patience — steady progress on a long-term goal quietly adds up to something big.' },
+    { key:'aquarius', symbol:'♒', de:'Wassermann', en:'Aquarius', range:'20.1.–18.2.', rangeEn:'Jan 20–Feb 18', end:[2,18],
+      traitsDe:['Unabhängig','Erfinderisch','Idealistisch','Originell'], traitsEn:['Independent','Inventive','Idealistic','Original'],
+      descDe:'Der Wassermann geht seinen eigenen Weg und fühlt sich zu großen Ideen und unkonventionellen Lösungen hingezogen. Unabhängig und idealistisch liegt ihm das große Ganze am Herzen.',
+      descEn:'Aquarius marches to its own beat, drawn to big ideas and unconventional solutions. Independent and idealistic, they care deeply about the bigger picture.',
+      monthlyDe:'Dieser Monat begünstigt originelle Ideen — der ungewöhnliche Ansatz, den du erwägst, ist der richtige.',
+      monthlyEn:'This month favours original ideas — the unusual approach you\'re considering is the right one.' },
+    { key:'pisces', symbol:'♓', de:'Fische', en:'Pisces', range:'19.2.–20.3.', rangeEn:'Feb 19–Mar 20', end:[3,20],
+      traitsDe:['Verträumt','Mitfühlend','Intuitiv','Künstlerisch'], traitsEn:['Dreamy','Compassionate','Intuitive','Artistic'],
+      descDe:'Die Fische erleben die Welt durch Fantasie und Mitgefühl und spüren Stimmungen oft, bevor ein Wort fällt. Mitfühlend und künstlerisch entdecken sie Magie im Alltäglichen.',
+      descEn:'Pisces feels the world through imagination and empathy, often sensing moods before words are spoken. Compassionate and artistic, they find magic in everyday things.',
+      monthlyDe:'Dieser Monat begünstigt Kreativität — ein Tagtraum, zu dem du immer wieder zurückkehrst, ist es wert, aufgeschrieben zu werden.',
+      monthlyEn:'This month favours creativity — a daydream you keep returning to is worth putting on paper.' }
+  ];
+
+  var MONTH_NAMES = {
+    de:['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
+    en:['January','February','March','April','May','June','July','August','September','October','November','December']
+  };
+
+  var UI = {
+    de:{
+      langBtnLabel:'🌐 EN',
+      tagline:'Dein chinesisches Tierkreiszeichen trifft dein Sternzeichen — verspielt, hübsch und in Sekunden berechnet.',
+      adTop:'Anzeige (Banner oben) · Platz für AdSense', adSize:'Empfohlene Größe: 728×90 / responsive',
+      adMid:'Anzeige (im Inhalt) · Platz für AdSense', adMidSize:'Empfohlen zwischen Ergebnis und Erklärung, responsive / 336×280',
+      adBottom:'Anzeige (Banner unten) · Platz für AdSense', adBottomSize:'Empfohlene Größe: 728×90 / responsive, vor dem Footer',
+      wheelCaption:'Innen: die 12 chinesischen Tierkreiszeichen · Außen: die 12 Sternzeichen',
+      legendHeading:'Geburtsjahre 1900–2026 auf einen Blick',
+      birthdateHeading:'Dein Geburtsdatum',
+      dayLabel:'Tag', monthLabel:'Monat', yearLabel:'Jahr', calcBtn:'Berechnen ✨',
+      placeholderNote:'Wähle dein Geburtsdatum und klicke auf „Berechnen ✨“, um dein Ergebnis zu sehen.',
+      chineseZodiacKicker:'Chinesisches Tierkreiszeichen', westernZodiacKicker:'Sternzeichen',
+      traitsLabel:'Eigenschaften', yearFortuneKicker:'Ausblick fürs Jahr', monthFortuneKicker:'Ausblick für den Monat',
+      shareHint:'📸 Mach einen Screenshot und teile dein Ergebnis auf LinkedIn, Instagram oder Facebook!',
+      usageHeading:'Spielregeln &amp; gut zu wissen',
+      usageLede:'Zodiac &amp; Stars verbindet zwei jahrtausendealte Traditionen zu einem verspielten Mini-Orakel.',
+      rule1:'Gib dein Geburtsdatum ein (Jahre 1900–2026 werden unterstützt) und klicke auf „Berechnen ✨“.',
+      rule2:'Du erhältst dein chinesisches Tierkreiszeichen, dein westliches Sternzeichen sowie einen Ausblick für Jahr und Monat.',
+      rule3:'Mach einen Screenshot deines Ergebnisses und teile es auf LinkedIn, Instagram oder Facebook — markier gern Freunde, die auch mitmachen sollen!',
+      rule4:'Alle Berechnungen laufen direkt in deinem Browser. Es werden keine Geburtsdaten gespeichert oder irgendwohin übertragen.',
+      disclaimer:'Nur zur Unterhaltung: Die Texte basieren auf traditionellem Volksglauben, nicht auf wissenschaftlicher Astrologie oder Astronomie. Bitte nicht als Grundlage für wichtige Entscheidungen verwenden — einfach Spaß daran haben! 🌙✨',
+      footerText:'© <span id="year"></span> Zodiac &amp; Stars · Nur zur Unterhaltung, keine astrologische Beratung',
+      tipBtn:'☕ Spendier einen Kaffee'
+    },
+    en:{
+      langBtnLabel:'🌐 DE',
+      tagline:'Where your Chinese zodiac meets your star sign — playful, pretty and calculated in seconds.',
+      adTop:'Ad slot (top banner) · Space for AdSense', adSize:'Recommended size: 728×90 / responsive',
+      adMid:'Ad slot (in-content) · Space for AdSense', adMidSize:'Best placed between the result and the explanation, responsive / 336×280',
+      adBottom:'Ad slot (bottom banner) · Space for AdSense', adBottomSize:'Recommended size: 728×90 / responsive, before the footer',
+      wheelCaption:'Inside: the 12 Chinese zodiac animals · Outside: the 12 star signs',
+      legendHeading:'Birth years 1900–2026 at a glance',
+      birthdateHeading:'Your Date of Birth',
+      dayLabel:'Day', monthLabel:'Month', yearLabel:'Year', calcBtn:'Calculate ✨',
+      placeholderNote:'Pick your date of birth and click “Calculate ✨” to see your result.',
+      chineseZodiacKicker:'Chinese Zodiac Sign', westernZodiacKicker:'Star Sign',
+      traitsLabel:'Traits', yearFortuneKicker:'Outlook for the Year', monthFortuneKicker:'Outlook for the Month',
+      shareHint:'📸 Take a screenshot and share your result on LinkedIn, Instagram or Facebook!',
+      usageHeading:'How it works &amp; fun facts',
+      usageLede:'Zodiac &amp; Stars mixes two ancient traditions into one playful mini-oracle.',
+      rule1:'Enter your date of birth (years 1900–2026 are supported) and click “Calculate ✨”.',
+      rule2:'You\'ll get your Chinese zodiac animal, your Western star sign, plus an outlook for the year and month.',
+      rule3:'Screenshot your result and share it on LinkedIn, Instagram or Facebook — tag friends who should try it too!',
+      rule4:'All calculations run right in your browser. No birth data is stored or transmitted anywhere.',
+      disclaimer:'For entertainment only: these texts are based on traditional folklore, not scientific astrology or astronomy. Please don\'t use them for important decisions — just enjoy the fun! 🌙✨',
+      footerText:'© <span id="year"></span> Zodiac &amp; Stars · For entertainment only, not astrological advice',
+      tipBtn:'☕ Buy me a coffee'
+    }
+  };
+
+  var lang = 'de';
+  var lastResult = null;
+
+  var langBtn = document.getElementById('langBtn');
+  var daySel = document.getElementById('daySel');
+  var monthSel = document.getElementById('monthSel');
+  var yearSel = document.getElementById('yearSel');
+  var calcBtn = document.getElementById('calcBtn');
+  var resultsEl = document.getElementById('results');
+  var legendGrid = document.getElementById('legendGrid');
+  var wheelSvg = document.getElementById('wheelSvg');
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // ---------- helpers ----------
+  function polar(cx, cy, r, angleDeg){
+    var a = (angleDeg - 90) * Math.PI / 180;
+    return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+  }
+  function donutPath(cx, cy, rOuter, rInner, startAngle, endAngle){
+    var so = polar(cx, cy, rOuter, endAngle);
+    var eo = polar(cx, cy, rOuter, startAngle);
+    var si = polar(cx, cy, rInner, endAngle);
+    var ei = polar(cx, cy, rInner, startAngle);
+    var largeArc = (endAngle - startAngle) <= 180 ? 0 : 1;
+    return ['M', so.x, so.y, 'A', rOuter, rOuter, 0, largeArc, 0, eo.x, eo.y,
+            'L', ei.x, ei.y, 'A', rInner, rInner, 0, largeArc, 1, si.x, si.y, 'Z'].join(' ');
+  }
+  function esc(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function daysInMonth(year, month){ return new Date(year, month, 0).getDate(); }
+
+  function getAnimal(year){
+    var idx = ((year - 4) % 12 + 12) % 12;
+    return ANIMALS[idx];
+  }
+  function getSign(month, day){
+    var md = month * 100 + day;
+    for (var i = 0; i < SIGNS.length; i++){
+      var e = SIGNS[i].end;
+      if (md <= e[0] * 100 + e[1]) return SIGNS[i];
+    }
+    return SIGNS[SIGNS.length - 1];
+  }
+
+  // ---------- wheel ----------
+  // Pick 6 years centred on the "still-living" window (ages 12-72), extending
+  // forward/backward along the animal's own 12-year cycle if the strict
+  // window doesn't contain 6 entries.
+  function pickWheelYears(years){
+    var thisYear = new Date().getFullYear();
+    var lo = thisYear - 72, hi = thisYear - 12;
+    var picked = years.filter(function(y){ return y >= lo && y <= hi; });
+    if (!picked.length) picked = years.slice(Math.max(0, years.length - 6));
+    while (picked.length < 6){
+      var idxLow = years.indexOf(picked[0]);
+      var idxHigh = years.indexOf(picked[picked.length - 1]);
+      var candLow = idxLow - 1 >= 0 ? years[idxLow - 1] : null;
+      var candHigh = idxHigh + 1 < years.length ? years[idxHigh + 1] : null;
+      if (candLow === null && candHigh === null) break;
+      var penLow = candLow === null ? Infinity : Math.max(0, lo - candLow);
+      var penHigh = candHigh === null ? Infinity : Math.max(0, candHigh - hi);
+      if (penLow <= penHigh){ picked.unshift(candLow); } else { picked.push(candHigh); }
+    }
+    return picked;
+  }
+
+  function buildWheel(){
+    var cx = 895, cy = 895, rOuter = 600, rInner = 50;
+    var n = ANIMALS.length;
+    var svgParts = [];
+    svgParts.push('<title id="wheelTitle">Zodiac &amp; Stars wheel</title>');
+
+    // pastel sector fills
+    for (var i = 0; i < n; i++){
+      var start = i * 30 - 15, end = i * 30 + 15;
+      var hue = Math.round((360 / n) * i);
+      var fill = 'hsl(' + hue + ' 70% 90%)';
+      var stroke = 'hsl(' + hue + ' 45% 70%)';
+      svgParts.push('<path d="' + donutPath(cx, cy, rOuter, rInner, start, end) + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="1.5"></path>');
+    }
+
+    // labels: emoji + name kept upright near the outer edge; years are shown
+    // as 6 stacked tiers (one year per ring, oldest near the centre, newest
+    // near the name) instead of side-by-side, with generous radial gaps so
+    // nothing collides even at 3/9 o'clock
+    var yearRadii = [105, 150, 195, 240, 285, 330];
+    for (var i2 = 0; i2 < n; i2++){
+      var a = ANIMALS[i2];
+      var mid = i2 * 30;
+      var pEmoji = polar(cx, cy, 558, mid);
+      var pName = polar(cx, cy, 427, mid);
+      var name = lang === 'de' ? a.de : a.en;
+      svgParts.push('<text x="' + pEmoji.x + '" y="' + pEmoji.y + '" font-size="72" text-anchor="middle" dominant-baseline="middle">' + a.emoji + '</text>');
+      svgParts.push('<text x="' + pName.x + '" y="' + pName.y + '" font-size="30" font-weight="800" fill="var(--ink)" text-anchor="middle" dominant-baseline="middle">' + esc(name) + '</text>');
+
+      var wheelYears = pickWheelYears(a.years);
+      wheelYears.forEach(function(yr, yi){
+        var pYear = polar(cx, cy, yearRadii[yi], mid);
+        svgParts.push('<text x="' + pYear.x + '" y="' + pYear.y + '" font-size="18" font-weight="800" fill="var(--accent-strong)" font-family="var(--font-mono)" text-anchor="middle" dominant-baseline="middle">' + yr + '</text>');
+      });
+    }
+
+    // center circle
+    svgParts.push('<circle cx="' + cx + '" cy="' + cy + '" r="' + (rInner - 4) + '" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"></circle>');
+    svgParts.push('<text x="' + cx + '" y="' + (cy - 13) + '" font-size="20" text-anchor="middle" dominant-baseline="middle">🔮</text>');
+    svgParts.push('<text x="' + cx + '" y="' + (cy + 13) + '" font-size="11" fill="var(--ink-soft)" text-anchor="middle" dominant-baseline="middle" font-family="var(--font-mono)">1900-2026</text>');
+
+    // outer ring: western zodiac icons, offset by 15deg, with a visible name label
+    var rIconRing = 635, rIcon = 46, rIconLabel = 780;
+    var m = SIGNS.length;
+    for (var j = 0; j < m; j++){
+      var s = SIGNS[j];
+      var angle = j * 30 + 15;
+      var hue = Math.round((360 / m) * j) + 15;
+      var pIcon = polar(cx, cy, rIconRing, angle);
+      var pLabel = polar(cx, cy, rIconLabel, angle);
+      var signName = (lang === 'de' ? s.de : s.en);
+      var signRange = (lang === 'de' ? s.range : s.rangeEn);
+      svgParts.push('<g>' +
+        '<title>' + esc(signName) + ' (' + esc(signRange) + ')</title>' +
+        '<circle cx="' + pIcon.x + '" cy="' + pIcon.y + '" r="' + rIcon + '" fill="hsl(' + hue + ' 75% 92%)" stroke="hsl(' + hue + ' 55% 55%)" stroke-width="2"></circle>' +
+        '<text x="' + pIcon.x + '" y="' + (pIcon.y + 1) + '" font-size="36" font-weight="700" fill="hsl(' + hue + ' 55% 32%)" text-anchor="middle" dominant-baseline="middle">' + s.symbol + '</text>' +
+        '</g>');
+      svgParts.push('<text x="' + pLabel.x + '" y="' + pLabel.y + '" font-size="26" font-weight="800" fill="var(--ink)" text-anchor="middle" dominant-baseline="middle">' + esc(signName) + '</text>');
+    }
+
+    wheelSvg.innerHTML = svgParts.join('');
+  }
+
+  function buildLegend(){
+    legendGrid.innerHTML = ANIMALS.map(function(a){
+      var name = lang === 'de' ? a.de : a.en;
+      return '<div class="legend-item"><span class="le-emoji">' + a.emoji + '</span>' +
+        '<span class="le-name">' + esc(name) + '</span>' +
+        '<span class="le-years">' + a.years.join(', ') + '</span></div>';
+    }).join('');
+  }
+
+  // ---------- form population ----------
+  function populateMonths(){
+    var names = MONTH_NAMES[lang];
+    var current = monthSel.value ? parseInt(monthSel.value, 10) : 6;
+    monthSel.innerHTML = names.map(function(name, i){
+      return '<option value="' + (i + 1) + '">' + esc(name) + '</option>';
+    }).join('');
+    monthSel.value = String(current);
+  }
+  function populateYears(){
+    if (yearSel.options.length) return;
+    var opts = [];
+    for (var y = 1900; y <= 2026; y++){ opts.push('<option value="' + y + '">' + y + '</option>'); }
+    yearSel.innerHTML = opts.join('');
+    yearSel.value = '1990';
+  }
+  function populateDays(){
+    var year = parseInt(yearSel.value, 10) || 1990;
+    var month = parseInt(monthSel.value, 10) || 6;
+    var max = daysInMonth(year, month);
+    var current = daySel.value ? Math.min(parseInt(daySel.value, 10), max) : 15;
+    var opts = [];
+    for (var d = 1; d <= max; d++){ opts.push('<option value="' + d + '">' + d + '</option>'); }
+    daySel.innerHTML = opts.join('');
+    daySel.value = String(current);
+  }
+
+  // ---------- result rendering ----------
+  function renderResult(animal, sign){
+    lastResult = { animal: animal, sign: sign };
+    var t = UI[lang];
+    var animalName = lang === 'de' ? animal.de : animal.en;
+    var signName = lang === 'de' ? sign.de : sign.en;
+    var signRange = lang === 'de' ? sign.range : sign.rangeEn;
+    var animalTraits = lang === 'de' ? animal.traitsDe : animal.traitsEn;
+    var signTraits = lang === 'de' ? sign.traitsDe : sign.traitsEn;
+    var animalDesc = lang === 'de' ? animal.descDe : animal.descEn;
+    var signDesc = lang === 'de' ? sign.descDe : sign.descEn;
+    var yearFortune = lang === 'de' ? animal.fortuneDe : animal.fortuneEn;
+    var monthFortune = lang === 'de' ? sign.monthlyDe : sign.monthlyEn;
+
+    var chips = function(list){
+      return list.map(function(x){ return '<span class="trait-chip">' + esc(x) + '</span>'; }).join('');
+    };
+
+    resultsEl.innerHTML =
+      '<div class="result-card">' +
+        '<div class="result-grid">' +
+          '<div class="result-block">' +
+            '<div class="kicker">' + esc(t.chineseZodiacKicker) + '</div>' +
+            '<h3><span class="big-emoji">' + animal.emoji + '</span> ' + esc(animalName) + '</h3>' +
+            '<div class="trait-chips">' + chips(animalTraits) + '</div>' +
+            '<p>' + esc(animalDesc) + '</p>' +
+          '</div>' +
+          '<div class="result-block">' +
+            '<div class="kicker">' + esc(t.westernZodiacKicker) + '</div>' +
+            '<h3><span class="big-emoji">' + sign.symbol + '</span> ' + esc(signName) + ' <small style="color:var(--ink-soft);font-weight:400;font-size:12px;">(' + esc(signRange) + ')</small></h3>' +
+            '<div class="trait-chips">' + chips(signTraits) + '</div>' +
+            '<p>' + esc(signDesc) + '</p>' +
+          '</div>' +
+        '</div>' +
+        '<hr class="divider">' +
+        '<div class="fortune-grid">' +
+          '<div class="fortune-block"><div class="kicker">' + esc(t.yearFortuneKicker) + '</div><p>' + esc(yearFortune) + '</p></div>' +
+          '<div class="fortune-block"><div class="kicker">' + esc(t.monthFortuneKicker) + '</div><p>' + esc(monthFortune) + '</p></div>' +
+        '</div>' +
+        '<div class="share-hint">' + esc(t.shareHint) + '</div>' +
+      '</div>';
+  }
+
+  function showPlaceholder(){
+    var t = UI[lang];
+    resultsEl.innerHTML = '<p class="placeholder-note">' + esc(t.placeholderNote) + '</p>';
+  }
+
+  function runCalculate(){
+    var year = parseInt(yearSel.value, 10);
+    var month = parseInt(monthSel.value, 10);
+    var day = parseInt(daySel.value, 10);
+    var animal = getAnimal(year);
+    var sign = getSign(month, day);
+    renderResult(animal, sign);
+  }
+
+  calcBtn.addEventListener('click', runCalculate);
+  yearSel.addEventListener('change', populateDays);
+  monthSel.addEventListener('change', populateDays);
+
+  // ---------- language ----------
+  function applyI18n(){
+    var t = UI[lang];
+    document.documentElement.lang = lang;
+    langBtn.textContent = t.langBtnLabel;
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var key = el.getAttribute('data-i18n');
+      if (t[key] === undefined) return;
+      if (key === 'footerText'){
+        el.innerHTML = t[key];
+        document.getElementById('year').textContent = new Date().getFullYear();
+      } else {
+        el.innerHTML = t[key];
+      }
+    });
+  }
+
+  function setLang(next){
+    lang = next;
+    applyI18n();
+    populateMonths();
+    populateDays();
+    buildWheel();
+    buildLegend();
+    if (lastResult){
+      renderResult(lastResult.animal, lastResult.sign);
+    } else {
+      showPlaceholder();
+    }
+  }
+
+  langBtn.addEventListener('click', function(){
+    setLang(lang === 'de' ? 'en' : 'de');
+  });
+
+  // ---------- init ----------
+  populateMonths();
+  populateYears();
+  populateDays();
+  applyI18n();
+  buildWheel();
+  buildLegend();
+  showPlaceholder();
+})();
+</script>
+</body>
+</html>
