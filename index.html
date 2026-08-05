@@ -143,12 +143,18 @@
   .topbar{
     max-width:920px; margin:0 auto; padding:14px 20px 0; display:flex; justify-content:flex-end;
   }
-  #langBtn{
-    font-family:var(--font-mono); font-size:12.5px; letter-spacing:.06em; font-weight:700;
-    background:var(--surface); color:var(--accent-strong); border:1px solid var(--border);
-    border-radius:999px; padding:7px 14px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;
+  .lang-switch{
+    display:flex; background:var(--surface); border:1px solid var(--border);
+    border-radius:999px; padding:3px; gap:2px;
   }
-  #langBtn:hover{ background:var(--accent-tint); border-color:var(--accent); }
+  .lang-btn{
+    border:none; background:transparent; color:var(--ink-soft);
+    font-family:var(--font-mono); font-size:12px; font-weight:700;
+    padding:7px 12px; border-radius:999px; cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .lang-btn.active{ background:var(--accent); color:#fff; }
+  .lang-btn:not(.active):hover{ background:var(--accent-tint); color:var(--accent-strong); }
 
   header.site{
     padding:20px 20px 26px;
@@ -365,7 +371,13 @@
 
 <div class="page">
 
-  <div class="topbar"><button type="button" id="langBtn">🌐 EN</button></div>
+  <div class="topbar">
+    <div class="lang-switch" role="group" aria-label="Language">
+      <button class="lang-btn" data-lang="zh" type="button">中文</button>
+      <button class="lang-btn" data-lang="en" type="button">EN</button>
+      <button class="lang-btn" data-lang="de" type="button">DE</button>
+    </div>
+  </div>
 
   <header class="site">
     <h1 class="title"><span class="title-icon left">🔮</span><span class="title-text">Zodiac &amp; Stars</span><span class="title-icon right">✨</span></h1>
@@ -511,161 +523,275 @@
 (function(){
   // ---------- data ----------
   var ANIMALS = [
-    { key:'rat', emoji:'🐀', de:'Ratte', en:'Rat', years:[1900,1912,1924,1936,1948,1960,1972,1984,1996,2008,2020],
-      traitsDe:['Klug','Findig','Charmant','Anpassungsfähig'], traitsEn:['Clever','Resourceful','Charming','Adaptable'],
+    { key:'rat', emoji:'🐀', de:'Ratte', en:'Rat', zh:'鼠', years:[1900,1912,1924,1936,1948,1960,1972,1984,1996,2008,2020],
+      traitsDe:['Klug','Findig','Charmant','Anpassungsfähig'], traitsEn:['Clever','Resourceful','Charming','Adaptable'], traitsZh:['聪明','机敏','有魅力','适应力强'],
       descDe:'Ratten sind schlau und aufmerksam und erkennen Chancen, bevor andere sie überhaupt bemerken. Sie sind gesellig und charmant und knüpfen leicht Kontakte, doch ihr rastloser Geist sehnt sich nach Abwechslung.',
       descEn:'Rats are quick-witted and sharp observers who can spot an opportunity before anyone else. Sociable and charming, they build networks easily, though their restless minds crave variety.',
+      descZh:'鼠年出生的人头脑灵活、观察敏锐，总能比别人更早发现机会。他们善于社交、魅力十足，很容易结交新朋友，但那颗闲不住的心也渴望不断变化。',
       fortuneDe:'Dieses Jahr begünstigt deine Intuition — vertrau der leisen Ahnung, die dich immer wieder anstupst, meistens liegt sie richtig.',
-      fortuneEn:'This year favours your instincts — trust the quiet hunch that keeps nudging you, it\'s usually right.' },
-    { key:'ox', emoji:'🐂', de:'Büffel', en:'Ox', years:[1901,1913,1925,1937,1949,1961,1973,1985,1997,2009,2021],
-      traitsDe:['Beständig','Ehrlich','Fleißig','Zuverlässig'], traitsEn:['Steady','Honest','Diligent','Dependable'],
+      fortuneEn:'This year favours your instincts — trust the quiet hunch that keeps nudging you, it\'s usually right.',
+      fortuneZh:'今年你的直觉格外准——那个反复提醒你的小念头，往往是对的，不妨相信它。' },
+    { key:'ox', emoji:'🐂', de:'Büffel', en:'Ox', zh:'牛', years:[1901,1913,1925,1937,1949,1961,1973,1985,1997,2009,2021],
+      traitsDe:['Beständig','Ehrlich','Fleißig','Zuverlässig'], traitsEn:['Steady','Honest','Diligent','Dependable'], traitsZh:['踏实','诚实','勤奋','可靠'],
       descDe:'Büffel sind das verlässliche Rückgrat jeder Gruppe — geduldig, fleißig und ehrlich bis auf die Knochen. Sie bevorzugen bewährte Wege statt Abkürzungen und gewinnen Vertrauen durch Beständigkeit.',
       descEn:'Oxen are the reliable backbone of any group — patient, hardworking and honest to a fault. They prefer proven methods over shortcuts and earn trust through consistency.',
+      descZh:'牛年出生的人是团队里最靠得住的中坚力量——耐心、勤恳，诚实到骨子里。他们更愿意走被验证过的路，而不是抄近道，靠着始终如一赢得信任。',
       fortuneDe:'Langsam, aber sicher gewinnt dieses Jahr — ein geduldiger Plan von früher zahlt sich jetzt endlich aus.',
-      fortuneEn:'Slow and steady wins this year — a patient plan you started long ago is finally paying off.' },
-    { key:'tiger', emoji:'🐯', de:'Tiger', en:'Tiger', years:[1902,1914,1926,1938,1950,1962,1974,1986,1998,2010,2022],
-      traitsDe:['Mutig','Selbstbewusst','Ehrgeizig','Leidenschaftlich'], traitsEn:['Brave','Confident','Competitive','Passionate'],
+      fortuneEn:'Slow and steady wins this year — a patient plan you started long ago is finally paying off.',
+      fortuneZh:'今年欲速则不达——那个你很早就开始的耐心计划，终于要开花结果了。' },
+    { key:'tiger', emoji:'🐯', de:'Tiger', en:'Tiger', zh:'虎', years:[1902,1914,1926,1938,1950,1962,1974,1986,1998,2010,2022],
+      traitsDe:['Mutig','Selbstbewusst','Ehrgeizig','Leidenschaftlich'], traitsEn:['Brave','Confident','Competitive','Passionate'], traitsZh:['勇敢','自信','有野心','充满激情'],
       descDe:'Tiger betreten einen Raum, als würde er ihnen gehören — mutig, anziehend und unübersehbar. Ihr Ehrgeiz treibt große Pläne an, auch wenn Geduld nicht immer ihre Stärke ist.',
       descEn:'Tigers walk into a room like they own it — bold, magnetic and impossible to ignore. Their competitive streak fuels big ambitions, though patience isn\'t always their strong suit.',
+      descZh:'虎年出生的人走进任何房间都自带气场——大胆、有吸引力、让人无法忽视。旺盛的进取心驱动着宏大的计划，只是耐心不总是他们的强项。',
       fortuneDe:'Ein mutiger Schritt, den du aufgeschoben hast, lohnt sich dieses Jahr — das Rampenlicht ist auf deiner Seite.',
-      fortuneEn:'A bold move you\'ve been putting off is worth the risk this year — the spotlight favours you.' },
-    { key:'rabbit', emoji:'🐰', de:'Hase', en:'Rabbit', years:[1903,1915,1927,1939,1951,1963,1975,1987,1999,2011,2023],
-      traitsDe:['Sanft','Anmutig','Freundlich','Diplomatisch'], traitsEn:['Gentle','Graceful','Kind','Diplomatic'],
+      fortuneEn:'A bold move you\'ve been putting off is worth the risk this year — the spotlight favours you.',
+      fortuneZh:'今年那件你一直拖着没做的大胆决定，值得放手一试——聚光灯站在你这边。' },
+    { key:'rabbit', emoji:'🐰', de:'Hase', en:'Rabbit', zh:'兔', years:[1903,1915,1927,1939,1951,1963,1975,1987,1999,2011,2023],
+      traitsDe:['Sanft','Anmutig','Freundlich','Diplomatisch'], traitsEn:['Gentle','Graceful','Kind','Diplomatic'], traitsZh:['温和','优雅','友善','善于协调'],
       descDe:'Hasen gehen mit stiller Eleganz durchs Leben und bevorzugen Harmonie statt Streit. Warmherzig und rücksichtsvoll sind sie der Freund, dem jeder ein Geheimnis anvertraut.',
       descEn:'Rabbits move through life with quiet elegance, choosing harmony over conflict. Warm and considerate, they\'re the friend everyone trusts with a secret.',
+      descZh:'兔年出生的人举止从容优雅，比起争执更偏爱和谐。他们温暖体贴，是那种大家都愿意把秘密交托的朋友。',
       fortuneDe:'Frieden und Geborgenheit stehen dieses Jahr im Mittelpunkt — ein ruhiges Zuhause bringt unerwartete Freude.',
-      fortuneEn:'Peace and comfort take center stage this year — a calm home life brings unexpected joy.' },
-    { key:'dragon', emoji:'🐲', de:'Drache', en:'Dragon', years:[1904,1916,1928,1940,1952,1964,1976,1988,2000,2012,2024],
-      traitsDe:['Charismatisch','Ehrgeizig','Selbstbewusst','Visionär'], traitsEn:['Charismatic','Ambitious','Confident','Visionary'],
+      fortuneEn:'Peace and comfort take center stage this year — a calm home life brings unexpected joy.',
+      fortuneZh:'今年安稳与归属感是主题——一个平静的家庭生活会带来意想不到的惊喜。' },
+    { key:'dragon', emoji:'🐲', de:'Drache', en:'Dragon', zh:'龙', years:[1904,1916,1928,1940,1952,1964,1976,1988,2000,2012,2024],
+      traitsDe:['Charismatisch','Ehrgeizig','Selbstbewusst','Visionär'], traitsEn:['Charismatic','Ambitious','Confident','Visionary'], traitsZh:['有魅力','有野心','自信','有远见'],
       descDe:'Drachen sind geborene Anführer mit einer anziehenden Ausstrahlung und großen Träumen. Selbstbewusst und großzügig inspirieren sie andere allein dadurch, dass sie an sich selbst glauben.',
       descEn:'Dragons are natural-born leaders with a magnetic presence and larger-than-life dreams. Confident and generous, they inspire others simply by believing in themselves.',
+      descZh:'龙年出生的人是天生的领导者，气场强大、梦想远大。他们自信而慷慨，仅凭对自己的笃信就能感染和激励身边的人。',
       fortuneDe:'Große Ambitionen bekommen dieses Jahr echten Schwung — sprich die kühne Idee laut aus, andere werden sich dahinter versammeln.',
-      fortuneEn:'Big ambitions get real momentum this year — say the bold idea out loud, people will rally behind it.' },
-    { key:'snake', emoji:'🐍', de:'Schlange', en:'Snake', years:[1905,1917,1929,1941,1953,1965,1977,1989,2001,2013,2025],
-      traitsDe:['Weise','Intuitiv','Elegant','Geheimnisvoll'], traitsEn:['Wise','Intuitive','Elegant','Mysterious'],
+      fortuneEn:'Big ambitions get real momentum this year — say the bold idea out loud, people will rally behind it.',
+      fortuneZh:'今年宏大的抱负会获得真正的助力——把那个大胆的想法说出来，自会有人响应。' },
+    { key:'snake', emoji:'🐍', de:'Schlange', en:'Snake', zh:'蛇', years:[1905,1917,1929,1941,1953,1965,1977,1989,2001,2013,2025],
+      traitsDe:['Weise','Intuitiv','Elegant','Geheimnisvoll'], traitsEn:['Wise','Intuitive','Elegant','Mysterious'], traitsZh:['有智慧','有洞察力','优雅','神秘'],
       descDe:'Schlangen denken gründlich nach, bevor sie handeln, und bevorzugen stille Beobachtung statt lauter Worte. Elegant und intuitiv kennen sie oft die Antwort, bevor die Frage zu Ende gestellt ist.',
       descEn:'Snakes think deeply before they act, preferring quiet observation to loud declarations. Elegant and intuitive, they often know the answer before the question is finished.',
+      descZh:'蛇年出生的人做事前总会深思熟虑，比起高谈阔论更偏爱静静观察。优雅而富有洞察力，问题还没问完，他们往往已经知道答案。',
       fortuneDe:'Deine stille Strategie zahlt sich dieses Jahr aus — lass andere Lärm machen, während du vorankommst.',
-      fortuneEn:'Your quiet strategy pays off this year — let others make noise while you make progress.' },
-    { key:'horse', emoji:'🐴', de:'Pferd', en:'Horse', years:[1906,1918,1930,1942,1954,1966,1978,1990,2002,2014,2026],
-      traitsDe:['Energiegeladen','Unabhängig','Abenteuerlustig','Freiheitsliebend'], traitsEn:['Energetic','Independent','Adventurous','Free-spirited'],
+      fortuneEn:'Your quiet strategy pays off this year — let others make noise while you make progress.',
+      fortuneZh:'今年你静水流深的策略会有回报——让别人喧闹，你只管稳步前进。' },
+    { key:'horse', emoji:'🐴', de:'Pferd', en:'Horse', zh:'马', years:[1906,1918,1930,1942,1954,1966,1978,1990,2002,2014,2026],
+      traitsDe:['Energiegeladen','Unabhängig','Abenteuerlustig','Freiheitsliebend'], traitsEn:['Energetic','Independent','Adventurous','Free-spirited'], traitsZh:['活力充沛','独立','爱冒险','热爱自由'],
       descDe:'Pferde laufen dem Horizont entgegen, nicht vor etwas davon — angetrieben von Neugier und Freiheitsliebe. Gesellig und gut gelaunt bringen sie überall Energie mit.',
       descEn:'Horses run toward the horizon, not away from anything — driven by curiosity and a love of freedom. Sociable and upbeat, they bring energy wherever they go.',
+      descZh:'马年出生的人总是奔向地平线，而不是逃离什么——好奇心和对自由的热爱驱使着他们。他们爱交际、乐观开朗，走到哪里都带着满满的能量。',
       fortuneDe:'Reisen oder ein Neuanfang rufen dieses Jahr — sag Ja, bevor du es dir ausredest.',
-      fortuneEn:'Travel or a fresh start is calling this year — say yes before you talk yourself out of it.' },
-    { key:'goat', emoji:'🐐', de:'Ziege', en:'Goat', years:[1907,1919,1931,1943,1955,1967,1979,1991,2003,2015],
-      traitsDe:['Sanftmütig','Kreativ','Einfühlsam','Künstlerisch'], traitsEn:['Gentle','Creative','Empathetic','Artistic'],
+      fortuneEn:'Travel or a fresh start is calling this year — say yes before you talk yourself out of it.',
+      fortuneZh:'今年旅行或全新的开始在向你召唤——趁还没说服自己放弃，先答应下来。' },
+    { key:'goat', emoji:'🐐', de:'Ziege', en:'Goat', zh:'羊', years:[1907,1919,1931,1943,1955,1967,1979,1991,2003,2015],
+      traitsDe:['Sanftmütig','Kreativ','Einfühlsam','Künstlerisch'], traitsEn:['Gentle','Creative','Empathetic','Artistic'], traitsZh:['温柔','有创造力','富有同理心','有艺术气质'],
       descDe:'Ziegen haben ein weiches Herz und ein feines kreatives Gespür, das sie oft eher durch Kunst als durch Worte ausdrücken. Sanftmütig und einfühlsam brauchen sie ruhige Umgebungen, um wirklich aufzublühen.',
       descEn:'Goats have soft hearts and sharp creative instincts, often expressing themselves through art rather than words. Gentle and empathetic, they need calm surroundings to truly thrive.',
+      descZh:'羊年出生的人内心柔软、创造力敏锐，常常更愿意用艺术而不是言语表达自己。温柔而富有同理心，他们需要安静的环境才能真正绽放。',
       fortuneDe:'Ein kreatives Projekt findet dieses Jahr endlich sein Publikum — versteck deine Arbeit nicht, zeig sie.',
-      fortuneEn:'A creative project finally finds its audience this year — don\'t hide your work, share it.' },
-    { key:'monkey', emoji:'🐵', de:'Affe', en:'Monkey', years:[1908,1920,1932,1944,1956,1968,1980,1992,2004,2016],
-      traitsDe:['Clever','Witzig','Neugierig','Verspielt'], traitsEn:['Clever','Witty','Curious','Playful'],
+      fortuneEn:'A creative project finally finds its audience this year — don\'t hide your work, share it.',
+      fortuneZh:'今年一个创作项目终于会找到它的观众——别把作品藏起来，大胆展示出来。' },
+    { key:'monkey', emoji:'🐵', de:'Affe', en:'Monkey', zh:'猴', years:[1908,1920,1932,1944,1956,1968,1980,1992,2004,2016],
+      traitsDe:['Clever','Witzig','Neugierig','Verspielt'], traitsEn:['Clever','Witty','Curious','Playful'], traitsZh:['聪明','风趣','好奇','爱玩'],
       descDe:'Affen sind schnelle Denker mit einem schelmischen Humor und finden immer einen cleveren Umweg. Neugierig und verspielt langweilen sie sich schnell, wenn es nicht mehr spannend bleibt.',
       descEn:'Monkeys are quick thinkers with a mischievous sense of humour, always finding a clever shortcut. Curious and playful, they get bored fast when things stop being interesting.',
+      descZh:'猴年出生的人思维敏捷、带点调皮的幽默感，总能找到聪明的捷径。好奇又爱玩，一旦事情变得无趣，他们很快就会感到厌倦。',
       fortuneDe:'Eine clevere Idee, die du fast verworfen hättest, entpuppt sich dieses Jahr als klügster Schachzug.',
-      fortuneEn:'A clever idea you almost dismissed turns out to be the smartest move this year.' },
-    { key:'rooster', emoji:'🐓', de:'Hahn', en:'Rooster', years:[1909,1921,1933,1945,1957,1969,1981,1993,2005,2017],
-      traitsDe:['Selbstbewusst','Fleißig','Ehrlich','Aufmerksam'], traitsEn:['Confident','Hardworking','Honest','Observant'],
+      fortuneEn:'A clever idea you almost dismissed turns out to be the smartest move this year.',
+      fortuneZh:'今年那个你差点放弃的聪明点子，会成为你这一年最漂亮的一步棋。' },
+    { key:'rooster', emoji:'🐓', de:'Hahn', en:'Rooster', zh:'鸡', years:[1909,1921,1933,1945,1957,1969,1981,1993,2005,2017],
+      traitsDe:['Selbstbewusst','Fleißig','Ehrlich','Aufmerksam'], traitsEn:['Confident','Hardworking','Honest','Observant'], traitsZh:['自信','勤奋','诚实','观察力强'],
       descDe:'Hähne bemerken jedes Detail und stellen hohe Ansprüche an sich selbst, oft auch an andere. Selbstbewusst und fleißig sind sie stolz darauf, Dinge richtig zu machen.',
       descEn:'Roosters notice every detail and hold themselves to a high standard, often others too. Confident and hardworking, they take pride in doing things properly.',
+      descZh:'鸡年出生的人能注意到每一个细节，对自己（常常也对别人）要求很高。自信而勤奋，他们以把事情做到位为荣。',
       fortuneDe:'Dein Blick fürs Detail wird dieses Jahr bemerkt — die Anerkennung, die du dir verdient hast, kommt endlich an.',
-      fortuneEn:'Your attention to detail gets noticed this year — the recognition you\'ve earned is finally arriving.' },
-    { key:'dog', emoji:'🐶', de:'Hund', en:'Dog', years:[1910,1922,1934,1946,1958,1970,1982,1994,2006,2018],
-      traitsDe:['Loyal','Ehrlich','Beschützend','Vertrauenswürdig'], traitsEn:['Loyal','Honest','Protective','Trustworthy'],
+      fortuneEn:'Your attention to detail gets noticed this year — the recognition you\'ve earned is finally arriving.',
+      fortuneZh:'今年你对细节的用心会被人看见——你应得的认可，终于要到了。' },
+    { key:'dog', emoji:'🐶', de:'Hund', en:'Dog', zh:'狗', years:[1910,1922,1934,1946,1958,1970,1982,1994,2006,2018],
+      traitsDe:['Loyal','Ehrlich','Beschützend','Vertrauenswürdig'], traitsEn:['Loyal','Honest','Protective','Trustworthy'], traitsZh:['忠诚','诚实','有保护欲','值得信赖'],
       descDe:'Hunde sind unerschütterlich loyale Freunde, die zu den Menschen stehen, die sie lieben, ohne zu zögern. Ehrlich und beschützend haben sie ein starkes Gerechtigkeitsgefühl.',
       descEn:'Dogs are fiercely loyal friends who stand by the people they love, no questions asked. Honest and protective, they have a strong sense of fairness and justice.',
+      descZh:'狗年出生的人是无比忠诚的朋友，对所爱之人不离不弃、毫不犹豫。诚实而有保护欲，他们有着强烈的公正感。',
       fortuneDe:'Loyalität wird dieses Jahr belohnt — ein Freund oder Partner ist genau dann für dich da, wenn es zählt.',
-      fortuneEn:'Loyalty is repaid this year — a friend or partner shows up for you exactly when it matters.' },
-    { key:'pig', emoji:'🐷', de:'Schwein', en:'Pig', years:[1911,1923,1935,1947,1959,1971,1983,1995,2007,2019],
-      traitsDe:['Großzügig','Warmherzig','Fleißig','Optimistisch'], traitsEn:['Generous','Warm-hearted','Diligent','Optimistic'],
+      fortuneEn:'Loyalty is repaid this year — a friend or partner shows up for you exactly when it matters.',
+      fortuneZh:'今年忠诚会得到回报——在最关键的时刻，一位朋友或伴侣会出现在你身边。' },
+    { key:'pig', emoji:'🐷', de:'Schwein', en:'Pig', zh:'猪', years:[1911,1923,1935,1947,1959,1971,1983,1995,2007,2019],
+      traitsDe:['Großzügig','Warmherzig','Fleißig','Optimistisch'], traitsEn:['Generous','Warm-hearted','Diligent','Optimistic'], traitsZh:['慷慨','热心','勤奋','乐观'],
       descDe:'Schweine sind warmherzige, großzügige Seelen, die die einfachen Freuden des Lebens genießen und gerne teilen. Fleißig und optimistisch tragen sie selten nach und schenken schnell Vertrauen.',
       descEn:'Pigs are warm, generous souls who enjoy life\'s simple pleasures and share them freely. Diligent and optimistic, they rarely hold a grudge and trust easily.',
+      descZh:'猪年出生的人心地温暖、慷慨大方，享受生活中简单的快乐，也乐于与人分享。勤奋又乐观，他们很少记仇，也很容易信任别人。',
       fortuneDe:'Großzügigkeit zahlt sich dieses Jahr aus — die Freundlichkeit, die du im Stillen gegeben hast, kommt doppelt zurück.',
-      fortuneEn:'Generosity comes back around this year — the kindness you\'ve given quietly returns doubled.' }
+      fortuneEn:'Generosity comes back around this year — the kindness you\'ve given quietly returns doubled.',
+      fortuneZh:'今年慷慨会有回报——那些你默默付出的善意，会加倍回到你身边。' }
   ];
 
   var SIGNS = [
-    { key:'aries', symbol:'♈', de:'Widder', en:'Aries', range:'21.3.–19.4.', rangeEn:'Mar 21–Apr 19', end:[4,19],
-      traitsDe:['Mutig','Energiegeladen','Direkt','Ehrgeizig'], traitsEn:['Bold','Energetic','Direct','Competitive'],
+    { key:'aries', symbol:'♈', de:'Widder', en:'Aries', zh:'白羊座', range:'21.3.–19.4.', rangeEn:'Mar 21–Apr 19', rangeZh:'3月21日–4月19日', end:[4,19],
+      traitsDe:['Mutig','Energiegeladen','Direkt','Ehrgeizig'], traitsEn:['Bold','Energetic','Direct','Competitive'], traitsZh:['勇敢','精力充沛','直率','好胜'],
       descDe:'Der Widder führt mit Feuer und Instinkt und stürzt sich in neue Herausforderungen, ohne lange zu grübeln. Direkt und energiegeladen ist er am glücklichsten, wenn es ein Ziel zu verfolgen gibt.',
       descEn:'Aries leads with fire and instinct, diving into new challenges before overthinking them. Direct and energetic, they\'re happiest when there\'s a goal to chase.',
+      descZh:'白羊座凭一腔热忱和直觉行事，面对新挑战总是先冲上去，很少纠结太久。直率而精力充沛，只要有明确的目标可以追逐，他们就会格外快乐。',
       monthlyDe:'Dieser Monat belohnt schnelle Entscheidungen — die Gelegenheit, die du zuerst erkennst, ist die, die sich lohnt.',
-      monthlyEn:'This month rewards quick decisions — the opportunity you spot first is the one worth taking.' },
-    { key:'taurus', symbol:'♉', de:'Stier', en:'Taurus', range:'20.4.–20.5.', rangeEn:'Apr 20–May 20', end:[5,20],
-      traitsDe:['Geduldig','Zuverlässig','Sinnlich','Eigensinnig'], traitsEn:['Patient','Reliable','Sensual','Stubborn'],
+      monthlyEn:'This month rewards quick decisions — the opportunity you spot first is the one worth taking.',
+      monthlyZh:'这个月适合速战速决——你第一眼看中的机会，往往就是最值得抓住的那个。' },
+    { key:'taurus', symbol:'♉', de:'Stier', en:'Taurus', zh:'金牛座', range:'20.4.–20.5.', rangeEn:'Apr 20–May 20', rangeZh:'4月20日–5月20日', end:[5,20],
+      traitsDe:['Geduldig','Zuverlässig','Sinnlich','Eigensinnig'], traitsEn:['Patient','Reliable','Sensual','Stubborn'], traitsZh:['有耐心','可靠','感性','固执'],
       descDe:'Der Stier schätzt Komfort, Qualität und Dinge, die von Dauer sind. Geduldig und bodenständig geht er sein eigenes Tempo und ändert seine Meinung nur selten.',
       descEn:'Taurus values comfort, quality and things built to last. Patient and grounded, they move at their own pace and rarely change their mind once it\'s made up.',
+      descZh:'金牛座珍视舒适、品质，以及经得起时间考验的东西。有耐心又脚踏实地，他们按自己的节奏前进，主意一旦打定就很少改变。',
       monthlyDe:'Dieser Monat begünstigt Entschleunigung — gönn dir etwas Gutes, schöne Dinge wachsen in ihrem eigenen Tempo.',
-      monthlyEn:'This month favours slowing down — treat yourself well, good things grow at their own pace.' },
-    { key:'gemini', symbol:'♊', de:'Zwillinge', en:'Gemini', range:'21.5.–20.6.', rangeEn:'May 21–Jun 20', end:[6,20],
-      traitsDe:['Neugierig','Geistreich','Kommunikativ','Anpassungsfähig'], traitsEn:['Curious','Witty','Communicative','Adaptable'],
+      monthlyEn:'This month favours slowing down — treat yourself well, good things grow at their own pace.',
+      monthlyZh:'这个月适合放慢脚步——好好善待自己，美好的事物本就该按自己的节奏生长。' },
+    { key:'gemini', symbol:'♊', de:'Zwillinge', en:'Gemini', zh:'双子座', range:'21.5.–20.6.', rangeEn:'May 21–Jun 20', rangeZh:'5月21日–6月20日', end:[6,20],
+      traitsDe:['Neugierig','Geistreich','Kommunikativ','Anpassungsfähig'], traitsEn:['Curious','Witty','Communicative','Adaptable'], traitsZh:['好奇','机智','善于沟通','适应力强'],
       descDe:'Die Gedanken der Zwillinge springen schnell und mühelos zwischen Ideen und Gesprächen hin und her. Neugierig und kommunikativ blühen sie bei Abwechslung und neuem Wissen auf.',
       descEn:'Gemini\'s mind moves fast, jumping between ideas and conversations with ease. Curious and communicative, they thrive on variety and new information.',
+      descZh:'双子座的思维在各种想法和话题之间灵活跳跃，毫不费力。好奇又健谈，他们在变化和新知识里如鱼得水。',
       monthlyDe:'Dieser Monat bringt spannende Gespräche — ein beiläufiger Plausch könnte zu etwas Größerem werden.',
-      monthlyEn:'This month brings interesting conversations — a casual chat could turn into something bigger.' },
-    { key:'cancer', symbol:'♋', de:'Krebs', en:'Cancer', range:'21.6.–22.7.', rangeEn:'Jun 21–Jul 22', end:[7,22],
-      traitsDe:['Fürsorglich','Intuitiv','Loyal','Sentimental'], traitsEn:['Caring','Intuitive','Loyal','Sentimental'],
+      monthlyEn:'This month brings interesting conversations — a casual chat could turn into something bigger.',
+      monthlyZh:'这个月会有不少有趣的对话——一次不经意的闲聊，也许会发展成更大的机会。' },
+    { key:'cancer', symbol:'♋', de:'Krebs', en:'Cancer', zh:'巨蟹座', range:'21.6.–22.7.', rangeEn:'Jun 21–Jul 22', rangeZh:'6月21日–7月22日', end:[7,22],
+      traitsDe:['Fürsorglich','Intuitiv','Loyal','Sentimental'], traitsEn:['Caring','Intuitive','Loyal','Sentimental'], traitsZh:['体贴','有直觉','忠诚','感性'],
       descDe:'Der Krebs fühlt alles zutiefst und kümmert sich mit stiller Hingabe um geliebte Menschen. Intuitiv und sentimental bedeuten ihm Zuhause und Familie mehr als jeder Status.',
       descEn:'Cancer feels everything deeply and cares for loved ones with quiet devotion. Intuitive and sentimental, home and family matter more than status ever could.',
+      descZh:'巨蟹座感情细腻深沉，会默默用心照顾所爱之人。直觉敏锐又重感情，对他们来说家庭和归属感比任何身份地位都重要。',
       monthlyDe:'Dieser Monat begünstigt enge Bindungen — ein ehrliches Gespräch bringt dich jemandem näher, der dir wichtig ist.',
-      monthlyEn:'This month favours close bonds — a heartfelt conversation brings you closer to someone who matters.' },
-    { key:'leo', symbol:'♌', de:'Löwe', en:'Leo', range:'23.7.–22.8.', rangeEn:'Jul 23–Aug 22', end:[8,22],
-      traitsDe:['Selbstbewusst','Großzügig','Dramatisch','Warmherzig'], traitsEn:['Confident','Generous','Dramatic','Warm'],
+      monthlyEn:'This month favours close bonds — a heartfelt conversation brings you closer to someone who matters.',
+      monthlyZh:'这个月适合经营亲密关系——一次坦诚的谈话，会让你和在乎的人走得更近。' },
+    { key:'leo', symbol:'♌', de:'Löwe', en:'Leo', zh:'狮子座', range:'23.7.–22.8.', rangeEn:'Jul 23–Aug 22', rangeZh:'7月23日–8月22日', end:[8,22],
+      traitsDe:['Selbstbewusst','Großzügig','Dramatisch','Warmherzig'], traitsEn:['Confident','Generous','Dramatic','Warm'], traitsZh:['自信','慷慨','戏剧化','热情'],
       descDe:'Der Löwe strahlt am hellsten vor Publikum und ist großzügig mit Liebe und Aufmerksamkeit. Selbstbewusst und warmherzig führt er mit Herz und erwartet Loyalität zurück.',
       descEn:'Leo shines brightest in front of an audience, generous with love and attention. Confident and warm, they lead with heart and expect loyalty in return.',
+      descZh:'狮子座在众人面前最为闪耀，对爱与关注也格外慷慨。自信而热情，他们用真心去带领他人，也期待同样真诚的忠诚作为回报。',
       monthlyDe:'Dieser Monat rückt dich ins Rampenlicht — nimm die Aufmerksamkeit an, du hast sie dir redlich verdient.',
-      monthlyEn:'This month puts you center stage — accept the attention, you\'ve earned every bit of it.' },
-    { key:'virgo', symbol:'♍', de:'Jungfrau', en:'Virgo', range:'23.8.–22.9.', rangeEn:'Aug 23–Sep 22', end:[9,22],
-      traitsDe:['Analytisch','Praktisch','Akribisch','Hilfsbereit'], traitsEn:['Analytical','Practical','Meticulous','Helpful'],
+      monthlyEn:'This month puts you center stage — accept the attention, you\'ve earned every bit of it.',
+      monthlyZh:'这个月你会站上舞台中央——坦然接受这份关注，那是你应得的。' },
+    { key:'virgo', symbol:'♍', de:'Jungfrau', en:'Virgo', zh:'处女座', range:'23.8.–22.9.', rangeEn:'Aug 23–Sep 22', rangeZh:'8月23日–9月22日', end:[9,22],
+      traitsDe:['Analytisch','Praktisch','Akribisch','Hilfsbereit'], traitsEn:['Analytical','Practical','Meticulous','Helpful'], traitsZh:['善分析','务实','一丝不苟','乐于助人'],
       descDe:'Die Jungfrau bemerkt, was allen anderen entgeht, und behebt es still, bevor es zum Problem wird. Praktisch und hilfsbereit zeigt sie Liebe durch nützliche, durchdachte Taten.',
       descEn:'Virgo notices what everyone else misses and quietly fixes it before it becomes a problem. Practical and helpful, they show love through useful, thoughtful actions.',
+      descZh:'处女座总能注意到别人忽略的细节，并在问题变严重之前悄悄解决。务实又乐于助人，他们习惯用实际、周到的行动来表达关心。',
       monthlyDe:'Dieser Monat belohnt Organisation — ein kleines System, das du jetzt einrichtest, spart dir später echte Zeit.',
-      monthlyEn:'This month rewards organisation — a small system you set up now saves real time later.' },
-    { key:'libra', symbol:'♎', de:'Waage', en:'Libra', range:'23.9.–22.10.', rangeEn:'Sep 23–Oct 22', end:[10,22],
-      traitsDe:['Diplomatisch','Charmant','Gerecht','Gesellig'], traitsEn:['Diplomatic','Charming','Fair','Social'],
+      monthlyEn:'This month rewards organisation — a small system you set up now saves real time later.',
+      monthlyZh:'这个月适合整理条理——现在建立的一个小系统，之后会为你省下不少时间。' },
+    { key:'libra', symbol:'♎', de:'Waage', en:'Libra', zh:'天秤座', range:'23.9.–22.10.', rangeEn:'Sep 23–Oct 22', rangeZh:'9月23日–10月22日', end:[10,22],
+      traitsDe:['Diplomatisch','Charmant','Gerecht','Gesellig'], traitsEn:['Diplomatic','Charming','Fair','Social'], traitsZh:['善外交','有魅力','公正','善社交'],
       descDe:'Die Waage sucht in allem Balance und Schönheit, von Beziehungen bis zum schön gedeckten Tisch. Diplomatisch und gesellig ist sie eine geborene Vermittlerin, die Konflikte nicht lange ertragen kann.',
       descEn:'Libra seeks balance and beauty in everything, from relationships to a well-set table. Diplomatic and social, they\'re natural mediators who hate to see conflict linger.',
+      descZh:'天秤座在生活的方方面面都追求平衡与美感，从人际关系到餐桌摆设都不例外。善于外交又爱社交，他们是天生的调解者，见不得冲突持续太久。',
       monthlyDe:'Dieser Monat begünstigt Partnerschaften — ein fairer Kompromiss ebnet jetzt einen deutlich leichteren Weg.',
-      monthlyEn:'This month favours partnerships — a fair compromise now sets up a much smoother path ahead.' },
-    { key:'scorpio', symbol:'♏', de:'Skorpion', en:'Scorpio', range:'23.10.–21.11.', rangeEn:'Oct 23–Nov 21', end:[11,21],
-      traitsDe:['Intensiv','Leidenschaftlich','Scharfsinnig','Zielstrebig'], traitsEn:['Intense','Passionate','Perceptive','Determined'],
+      monthlyEn:'This month favours partnerships — a fair compromise now sets up a much smoother path ahead.',
+      monthlyZh:'这个月适合经营伙伴关系——一个公平的折中方案，会让接下来的路顺畅不少。' },
+    { key:'scorpio', symbol:'♏', de:'Skorpion', en:'Scorpio', zh:'天蝎座', range:'23.10.–21.11.', rangeEn:'Oct 23–Nov 21', rangeZh:'10月23日–11月21日', end:[11,21],
+      traitsDe:['Intensiv','Leidenschaftlich','Scharfsinnig','Zielstrebig'], traitsEn:['Intense','Passionate','Perceptive','Determined'], traitsZh:['强烈','热情','敏锐','坚定'],
       descDe:'Der Skorpion fühlt alles intensiv und durchschaut oberflächlichen Smalltalk sofort. Leidenschaftlich und zielstrebig lässt er nicht mehr locker, sobald er sich für etwas entschieden hat.',
       descEn:'Scorpio feels things intensely and sees straight through surface-level small talk. Passionate and determined, once they commit to something, they don\'t let go easily.',
+      descZh:'天蝎座感受一切都格外强烈，也总能一眼看穿肤浅的寒暄。热情而坚定，一旦下定决心，就很难轻易放手。',
       monthlyDe:'Dieser Monat belohnt Fokus — das Ziel, das dich still beschäftigt, ist näher, als es scheint.',
-      monthlyEn:'This month rewards focus — the goal you\'ve been quietly obsessing over is closer than it looks.' },
-    { key:'sagittarius', symbol:'♐', de:'Schütze', en:'Sagittarius', range:'22.11.–21.12.', rangeEn:'Nov 22–Dec 21', end:[12,21],
-      traitsDe:['Abenteuerlustig','Optimistisch','Ehrlich','Freiheitsliebend'], traitsEn:['Adventurous','Optimistic','Honest','Free-spirited'],
+      monthlyEn:'This month rewards focus — the goal you\'ve been quietly obsessing over is closer than it looks.',
+      monthlyZh:'这个月适合专注——那个你默默惦记的目标，其实比看上去更接近了。' },
+    { key:'sagittarius', symbol:'♐', de:'Schütze', en:'Sagittarius', zh:'射手座', range:'22.11.–21.12.', rangeEn:'Nov 22–Dec 21', rangeZh:'11月22日–12月21日', end:[12,21],
+      traitsDe:['Abenteuerlustig','Optimistisch','Ehrlich','Freiheitsliebend'], traitsEn:['Adventurous','Optimistic','Honest','Free-spirited'], traitsZh:['爱冒险','乐观','诚实','热爱自由'],
       descDe:'Der Schütze blickt stets zum nächsten Horizont, angetrieben von Neugier und Ehrlichkeit. Optimistisch und freiheitsliebend erkundet er lieber, als sich in Routine einzurichten.',
       descEn:'Sagittarius is always looking toward the next horizon, driven by curiosity and honesty. Optimistic and free-spirited, they\'d rather explore than settle into routine.',
+      descZh:'射手座的目光总是望向下一个地平线，由好奇心与坦率驱动。乐观又热爱自由，比起安于常规，他们更愿意去探索。',
       monthlyDe:'Dieser Monat begünstigt Entdeckungen — ein spontaner Plan gelingt besser als der, den du sorgfältig ausgearbeitet hast.',
-      monthlyEn:'This month favours exploring — a spontaneous plan turns out better than the one you carefully mapped.' },
-    { key:'capricorn', symbol:'♑', de:'Steinbock', en:'Capricorn', range:'22.12.–19.1.', rangeEn:'Dec 22–Jan 19', end:[12,31],
-      traitsDe:['Diszipliniert','Ehrgeizig','Geduldig','Verantwortungsbewusst'], traitsEn:['Disciplined','Ambitious','Patient','Responsible'],
+      monthlyEn:'This month favours exploring — a spontaneous plan turns out better than the one you carefully mapped.',
+      monthlyZh:'这个月适合去探索——一个临时起意的计划，效果会比精心安排的更好。' },
+    { key:'capricorn', symbol:'♑', de:'Steinbock', en:'Capricorn', zh:'摩羯座', range:'22.12.–19.1.', rangeEn:'Dec 22–Jan 19', rangeZh:'12月22日–1月19日', end:[12,31],
+      traitsDe:['Diszipliniert','Ehrgeizig','Geduldig','Verantwortungsbewusst'], traitsEn:['Disciplined','Ambitious','Patient','Responsible'], traitsZh:['自律','有野心','有耐心','有责任感'],
       descDe:'Der Steinbock erklimmt beharrlich seine langfristigen Ziele, ganz gleich wie lange es dauert. Diszipliniert und verantwortungsbewusst verdient er sich Respekt durch stille, beständige Arbeit.',
       descEn:'Capricorn climbs steadily toward long-term goals, unbothered by how long it takes. Disciplined and responsible, they earn respect through quiet, consistent effort.',
+      descZh:'摩羯座会稳步攀登长期目标，无惧过程有多漫长。自律又有责任感，他们靠着安静而持续的努力赢得尊重。',
       monthlyDe:'Dieser Monat belohnt Geduld — stetiger Fortschritt bei einem langfristigen Ziel summiert sich still zu etwas Großem.',
-      monthlyEn:'This month rewards patience — steady progress on a long-term goal quietly adds up to something big.' },
-    { key:'aquarius', symbol:'♒', de:'Wassermann', en:'Aquarius', range:'20.1.–18.2.', rangeEn:'Jan 20–Feb 18', end:[2,18],
-      traitsDe:['Unabhängig','Erfinderisch','Idealistisch','Originell'], traitsEn:['Independent','Inventive','Idealistic','Original'],
+      monthlyEn:'This month rewards patience — steady progress on a long-term goal quietly adds up to something big.',
+      monthlyZh:'这个月适合耐心积累——在长期目标上的稳步推进，正悄悄汇聚成一件大事。' },
+    { key:'aquarius', symbol:'♒', de:'Wassermann', en:'Aquarius', zh:'水瓶座', range:'20.1.–18.2.', rangeEn:'Jan 20–Feb 18', rangeZh:'1月20日–2月18日', end:[2,18],
+      traitsDe:['Unabhängig','Erfinderisch','Idealistisch','Originell'], traitsEn:['Independent','Inventive','Idealistic','Original'], traitsZh:['独立','有创造力','理想主义','有个性'],
       descDe:'Der Wassermann geht seinen eigenen Weg und fühlt sich zu großen Ideen und unkonventionellen Lösungen hingezogen. Unabhängig und idealistisch liegt ihm das große Ganze am Herzen.',
       descEn:'Aquarius marches to its own beat, drawn to big ideas and unconventional solutions. Independent and idealistic, they care deeply about the bigger picture.',
+      descZh:'水瓶座总是走自己的路，热衷于宏大的想法和不落俗套的解法。独立又理想主义，他们真正关心的是更大的格局。',
       monthlyDe:'Dieser Monat begünstigt originelle Ideen — der ungewöhnliche Ansatz, den du erwägst, ist der richtige.',
-      monthlyEn:'This month favours original ideas — the unusual approach you\'re considering is the right one.' },
-    { key:'pisces', symbol:'♓', de:'Fische', en:'Pisces', range:'19.2.–20.3.', rangeEn:'Feb 19–Mar 20', end:[3,20],
-      traitsDe:['Verträumt','Mitfühlend','Intuitiv','Künstlerisch'], traitsEn:['Dreamy','Compassionate','Intuitive','Artistic'],
+      monthlyEn:'This month favours original ideas — the unusual approach you\'re considering is the right one.',
+      monthlyZh:'这个月适合发挥创意——你正在考虑的那个不寻常的方案，其实是对的方向。' },
+    { key:'pisces', symbol:'♓', de:'Fische', en:'Pisces', zh:'双鱼座', range:'19.2.–20.3.', rangeEn:'Feb 19–Mar 20', rangeZh:'2月19日–3月20日', end:[3,20],
+      traitsDe:['Verträumt','Mitfühlend','Intuitiv','Künstlerisch'], traitsEn:['Dreamy','Compassionate','Intuitive','Artistic'], traitsZh:['浪漫','富有同理心','有直觉','有艺术气质'],
       descDe:'Die Fische erleben die Welt durch Fantasie und Mitgefühl und spüren Stimmungen oft, bevor ein Wort fällt. Mitfühlend und künstlerisch entdecken sie Magie im Alltäglichen.',
       descEn:'Pisces feels the world through imagination and empathy, often sensing moods before words are spoken. Compassionate and artistic, they find magic in everyday things.',
+      descZh:'双鱼座用想象力与同理心感受世界，常常在话说出口之前就已经察觉到情绪。富有同理心又有艺术气质，他们总能在日常里发现一点魔力。',
       monthlyDe:'Dieser Monat begünstigt Kreativität — ein Tagtraum, zu dem du immer wieder zurückkehrst, ist es wert, aufgeschrieben zu werden.',
-      monthlyEn:'This month favours creativity — a daydream you keep returning to is worth putting on paper.' }
+      monthlyEn:'This month favours creativity — a daydream you keep returning to is worth putting on paper.',
+      monthlyZh:'这个月适合发挥创造力——那个你反复想起的白日梦，值得被写下来。' }
   ];
 
   var MONTH_NAMES = {
+    zh:['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
     de:['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
     en:['January','February','March','April','May','June','July','August','September','October','November','December']
   };
 
   var UI = {
+    zh:{
+      langBtnLabel:'',
+      tagline:'你的生肖遇见你的星座——好玩又好看，几秒钟就能算出来。',
+      adTop:'广告位（顶部横幅）· AdSense 展示位置', adSize:'推荐尺寸：728×90 / 自适应',
+      adMid:'广告位（内容中）· AdSense 展示位置', adMidSize:'建议放在结果和说明之间，自适应 / 336×280',
+      adBottom:'广告位（底部横幅）· AdSense 展示位置', adBottomSize:'推荐尺寸：728×90 / 自适应，页脚之前',
+      wheelCaption:'内圈：12 个中国生肖 · 外圈：12 个西方星座',
+      legendHeading:'1900–2026 年出生年份一览',
+      birthdateHeading:'你的出生日期',
+      dayLabel:'日', monthLabel:'月', yearLabel:'年', calcBtn:'计算 ✨',
+      placeholderNote:'选择你的出生日期并点击「计算 ✨」查看结果。',
+      chineseZodiacKicker:'生肖', westernZodiacKicker:'星座',
+      traitsLabel:'性格特质', yearFortuneKicker:'年度运势', monthFortuneKicker:'月度运势',
+      shareHint:'📸 截图分享到朋友圈、小红书或微博，让好友也来测一测！',
+      usageHeading:'玩法说明 &amp; 小知识',
+      usageLede:'Zodiac &amp; Stars 把两个流传千年的传统结合成一个好玩的小小神谕。',
+      rule1:'输入你的出生日期（支持 1900–2026 年），点击「计算 ✨」。',
+      rule2:'你会得到自己的生肖、星座，以及年度和月度运势展望。',
+      rule3:'截图分享你的结果到朋友圈、小红书或微博——记得也叫上朋友一起来测！',
+      rule4:'所有计算都在你的浏览器本地完成，不会保存或上传任何出生日期信息。',
+      disclaimer:'仅供娱乐：以上文字基于传统民间文化，并非科学占星或天文学依据，请勿作为重要决定的参考——纯粹图个开心就好！🌙✨',
+      historyHeading:'十二生肖的起源与历史',
+      historyLede:'在成为厨房墙上俏皮的装饰画之前，生肖其实是一套流传两千多年、不断演变的计时系统。',
+      historySub1:'从地支到历法',
+      historySub2:'大赛跑的传说',
+      historySub3:'传播与文化差异',
+      historySub4:'今天的生肖文化',
+      historyFigCaption:'古老的生肖石雕——传统东方时间哲学',
+      history1:'十二生肖——即"生肖"，也称属相——可以追溯到战国时期和汉代，距今已有两千多年历史。它们最初与十二"地支"紧密相连，这套系统与十"天干"结合，用来纪年、纪月、纪日，甚至纪时辰。每个地支都对应一种动物，因此一个历法年份不仅能用数字表示，还能用动物名称来描述——这也是为什么直到今天人们仍然说"龙年""蛇年"，而不只是报出一个年份数字。',
+      history2:'关于十二生肖排序最广为人知的解释，是"大赛跑"的传说：玉皇大帝召集所有动物渡过一条湍急的河流，以此决定生肖的顺序。机灵的老鼠悄悄骑在牛的背上过河，并在最后一刻跳上岸夺得第一名——这就是它排在生肖之首的原因，而勤劳却不够机灵的牛只能屈居第二。传说猫曾拜托老鼠在比赛当天叫醒自己，却被故意放了鸽子——这也是许多版本的生肖故事里没有猫的民间解释，也是猫和老鼠在民间传说中至今"不对付"的由来。',
+      history3:'几个世纪以来，这套体系远远超出中国的范围，传播到越南、韩国、日本乃至东南亚大部分地区，各地文化也发展出了自己的版本。比如在越南，猫取代了兔子的位置；在日本某些地区，则用野猪代替了家猪。除了单纯的纪年功能，生肖还被用于择偶配对、给孩子取名，以及预测性格特征——父母会特意挑选"吉利"的年份生育孩子，媒人也会核对一对新人的生肖是否相合。',
+      history4:'直到今天，生肖依然是中国农历新年庆祝活动中不可或缺的一部分：每年都会推出印有当年生肖的邮票、硬币和装饰品，全球品牌也会借用这一符号推出限定系列。Zodiac &amp; Stars 正是延续着这一悠久传统——不是把它当作严肃的占卜，而是用一种轻松好玩的方式，把千年的故事传统和每个人最终都会问自己的那个问题连接起来："我到底是属什么的？"',
+      cultureHeading:'中西方占星文化对比',
+      cultureLede:'两套截然不同的思维体系，却不约而同地问出同一个问题：我的出生日期究竟透露了关于我的什么信息？',
+      cultureSub1:'不同的时间尺度',
+      cultureSub2:'不同的起源',
+      cultureSub3:'不同的日常应用',
+      cultureFigCaption:'一个刻有天蝎座星座的古董天球仪——西方星象的精密测算',
+      culture1:'两者最明显的区别在于时间尺度：生肖以出生年份为准，遵循十二年一个周期的循环，并与五行（木、火、土、金、水）和阴阳两极结合，形成一个完整的六十年大周期后才会出现完全相同的组合。而西方星座则以出生的月份和日期为准，描述的是出生那一刻太阳在黄道十二宫中所处的星座位置——这是一个仅有十二个月的周期，每年都会重新循环一次。',
+      culture2:'两套体系的起源也截然不同。西方占星学根植于古巴比伦人对天象的观测，后来又被古希腊人扩充了行星守护、宫位与相位的概念——本质上是一套描述太阳、月亮和行星在天空位置的几何系统。而中国的生肖传统则与道家自然哲学紧密交织：五行并不代表天体，而是代表彼此相生相克的能量属性，生肖只是这套用来描述时间、变化与平衡的更大体系中的一部分。',
+      culture3:'两者在日常生活中的用途也各有不同。生肖传统上更多用来描述一整代人共有的特质——同一年出生的人共享同一个生肖——尤其常用于择偶配对、家庭规划以及重大人生决策。西方星座则更侧重个人性格，而且往往会被进一步细分——通过上升星座、月亮星座和精确的出生时间，可以勾勒出比单一生肖动物细腻得多的个人画像。不过两套体系都源自同一种非常人性化的愿望：想从自己出生的那一刻，找到一种规律、一个故事，或者至少是一点乐趣——而这正是 Zodiac &amp; Stars 想用轻松好玩的方式把两者连接起来的初衷。',
+      howHeading:'这个工具是怎么运作的——以及为什么这样设计',
+      howLede:'幕后揭秘：一个出生日期是如何变成一个生肖、一个星座和两条小小运势的。',
+      howSub1:'背后的计算逻辑',
+      howSub2:'为什么转盘长这样',
+      howSub3:'从一开始就是多语言',
+      howSub4:'把隐私当作架构原则',
+      howFigCaption:'两个沙漏，一个共同的原理——两套体系如何让时间变得可见',
+      how1:'所有计算都完全在你的浏览器中完成，背后没有任何服务器参与。对于生肖，出生年份会通过一个简单的取模运算（年份减 4，再除以 12）对应到十二种动物之一——这其实是历史上地支循环规律的数学映射。对于西方星座，则会把出生的月和日与十二个经典日期区间逐一比对，其中摩羯座还有一条特殊规则，因为它的日期区间横跨了新年前后。两种计算都是完全确定性的：同样的出生日期永远得到同样的结果，其中不涉及任何随机性。',
+      how2:'转盘的设计是一个刻意的选择。十二生肖的经典呈现方式是一个圆环——很像钟表的表盘——因此这里的动物也按顺时针排列，从最上方的鼠开始。为了在有限的空间里容纳好几十年的出生年份并保持可读性，这些年份被安排成由内到外层层堆叠的环形，而不是挤在同一层——这样每个数字都足够大，不用放大也能看清。外圈的十二个西方星座图标被刻意设计成独立的第二层，与内圈的生肖轮盘互相呼应：两套体系并排共存，互不混淆，就像它们在现实中的关系一样。',
+      how3:'多语言支持从一开始就是整个概念的一部分，而不是后来才加上去的——每一段文字、每一条性格特质、每一条运势预测，都为每种语言单独完整撰写，因此切换语言时不会出现半生不熟的翻译腔。色彩与形状语言同样是刻意为之：暖色系的柔和色调、圆角卡片和俏皮的表情符号，都在传达"这只是娱乐，不是严肃建议"的信息——这一点在上方的免责声明中也有明确说明。',
+      how4:'最后一点：隐私保护不是事后补上的，而是架构本身的一部分。因为所有逻辑都在你的浏览器中运行，你的出生日期永远不会离开你的设备——不会被发送到服务器，不会被存储在任何地方，刷新页面后也会被彻底遗忘。这种极简性——一个单独的 HTML 文件，没有数据库，不追踪任何出生数据——正是从一开始就设定的目标：一个小巧、快速、自成一体的工具，无论一天被打开十次还是一万次，表现都完全一样。',
+      footerText:'© <span id="year"></span> Zodiac &amp; Stars · 仅供娱乐，非占星建议',
+      tipBtn:'☕ 请我喝杯咖啡',
+      faqHeading:'常见问题',
+      faqLede:'关于最常被问到的问题，这里给出简短的回答。',
+      faq:[
+        {q:'是否考虑了农历新年的分界，还是只按公历年份计算？', a:'并不完全考虑——这个工具只按公历年份来判定生肖，并不是按照实际的中国农历新年日期。比如在1月或2月初出生的人，如果当年的农历新年要到月底才到，按照传统算法，他们有时其实还算上一年的生肖。对于一个图个好玩的娱乐应用来说，这是一种刻意的简化处理。'},
+        {q:'支持哪些出生年份？', a:'支持 1900 年到 2026 年。超出这个范围目前无法计算结果。'},
+        {q:'为什么我的星座和其他 App 算出来的不一样？', a:'十二星座的具体日期分界，不同来源之间可能相差一两天，因为它们依据的是太阳实际的天文位置，而这个位置每年都会有细微偏移。本工具使用的是西方占星学里最常见的固定日期区间——如果你恰好出生在分界日附近，结果可能会和其他来源略有出入。'},
+        {q:'这个工具是严肃的占星或算命吗？', a:'不是，明确不是。正如上方免责声明所说，所有文字内容都基于传统民间文化，仅供娱乐——并非科学占星或天文学依据。'},
+        {q:'为什么现在也支持中文了？', a:'Zodiac &amp; Stars 最初只支持德文和英文，现在已经和本站其他工具一样统一为中/英/德三语，可以随时用页面上方的语言按钮切换。'},
+        {q:'这个工具会保存我的出生日期吗？', a:'不会。所有计算都在你的浏览器本地完成；你的出生日期不会被发送到任何服务器，刷新页面后也会被彻底遗忘。'}
+      ]
+    },
     de:{
       langBtnLabel:'🌐 EN',
       tagline:'Dein chinesisches Tierkreiszeichen trifft dein Sternzeichen — verspielt, hübsch und in Sekunden berechnet.',
@@ -727,7 +853,7 @@
         {q:'Welche Geburtsjahre werden unterstützt?', a:'1900 bis 2026. Außerhalb dieses Bereichs lässt sich aktuell kein Ergebnis berechnen.'},
         {q:'Warum unterscheidet sich mein Sternzeichen von dem, das eine andere App mir zeigt?', a:'Die genauen Datumsgrenzen der zwölf Sternzeichen schwanken je nach Quelle um ein bis zwei Tage, weil sie sich nach dem tatsächlichen astronomischen Sonnenstand richten. Dieses Tool nutzt die gängigen, feststehenden Datumsspannen der westlichen Astrologie — bei einer Geburt genau an einer Grenze kann das Ergebnis daher leicht abweichen.'},
         {q:'Ist das hier ernstgemeinte Astrologie oder Wahrsagerei?', a:'Nein, ausdrücklich nicht. Wie im Disclaimer oben erklärt, basieren alle Texte auf traditionellem Volksglauben und dienen ausschließlich der Unterhaltung — nicht auf wissenschaftlicher Astrologie oder Astronomie.'},
-        {q:'Warum gibt es dieses Tool nur auf Deutsch und Englisch?', a:'Zodiac &amp; Stars ist eines der früheren Tools in dieser Sammlung und wurde von Anfang an zweisprachig (DE/EN) konzipiert. Andere, später gebaute Tools auf dieser Seite nutzen ein dreisprachiges Konzept (ZH/EN/DE) — beide Ansätze bestehen aktuell parallel.'},
+        {q:'Warum gibt es dieses Tool jetzt auch auf Chinesisch?', a:'Zodiac &amp; Stars ist ursprünglich zweisprachig (DE/EN) gestartet und wurde jetzt an die übrigen Tools dieser Seite angeglichen, die ein dreisprachiges (ZH/EN/DE) Konzept mit Sprachschalter oben nutzen.'},
         {q:'Speichert dieses Tool mein Geburtsdatum?', a:'Nein. Die gesamte Berechnung läuft lokal in deinem Browser; dein Geburtsdatum wird nie an einen Server gesendet und beim Neuladen der Seite vollständig vergessen.'}
       ]
     },
@@ -792,16 +918,20 @@
         {q:'What birth years does this support?', a:'1900 through 2026. Dates outside that range can\'t currently be calculated.'},
         {q:'Why does my star sign differ from what another app shows me?', a:'The exact date boundaries of the twelve star signs vary by a day or two depending on the source, because they follow the sun\'s actual astronomical position. This tool uses the commonly used, fixed date ranges from Western astrology — if you were born right on a boundary, your result may differ slightly from another source.'},
         {q:'Is this meant to be taken as serious astrology or fortune-telling?', a:'No, explicitly not. As stated in the disclaimer above, all text is based on traditional folklore for entertainment only — not scientific astrology or astronomy.'},
-        {q:'Why is this tool only in German and English?', a:'Zodiac &amp; Stars is one of the earlier tools in this collection and was designed bilingual (DE/EN) from the start. Other, later tools on this site use a trilingual (ZH/EN/DE) approach — both currently coexist.'},
+        {q:'Why does this tool now also support Chinese?', a:'Zodiac &amp; Stars originally launched bilingual (DE/EN); it has now been brought in line with the rest of this site\'s tools, which use a trilingual (ZH/EN/DE) setup with a language switch at the top.'},
         {q:'Does this tool save my birth date?', a:'No. The entire calculation runs locally in your browser; your birth date is never sent to a server and is completely forgotten when you reload the page.'}
       ]
     }
   };
 
-  var lang = 'de';
+  var lang = 'en';
+  try {
+    var nav = (navigator.language || 'en').toLowerCase();
+    if (nav.indexOf('zh') === 0) lang = 'zh';
+    else if (nav.indexOf('de') === 0) lang = 'de';
+  } catch (e) {}
   var lastResult = null;
 
-  var langBtn = document.getElementById('langBtn');
   var daySel = document.getElementById('daySel');
   var monthSel = document.getElementById('monthSel');
   var yearSel = document.getElementById('yearSel');
@@ -892,7 +1022,7 @@
       var mid = i2 * 30;
       var pEmoji = polar(cx, cy, 558, mid);
       var pName = polar(cx, cy, 427, mid);
-      var name = lang === 'de' ? a.de : a.en;
+      var name = a[lang] || a.en;
       svgParts.push('<text x="' + pEmoji.x + '" y="' + pEmoji.y + '" font-size="72" text-anchor="middle" dominant-baseline="middle">' + a.emoji + '</text>');
       svgParts.push('<text x="' + pName.x + '" y="' + pName.y + '" font-size="30" font-weight="800" fill="var(--ink)" text-anchor="middle" dominant-baseline="middle">' + esc(name) + '</text>');
 
@@ -917,8 +1047,8 @@
       var hue = Math.round((360 / m) * j) + 15;
       var pIcon = polar(cx, cy, rIconRing, angle);
       var pLabel = polar(cx, cy, rIconLabel, angle);
-      var signName = (lang === 'de' ? s.de : s.en);
-      var signRange = (lang === 'de' ? s.range : s.rangeEn);
+      var signName = (s[lang] || s.en);
+      var signRange = ({de: s.range, en: s.rangeEn, zh: s.rangeZh})[lang] || s.rangeEn;
       svgParts.push('<g>' +
         '<title>' + esc(signName) + ' (' + esc(signRange) + ')</title>' +
         '<circle cx="' + pIcon.x + '" cy="' + pIcon.y + '" r="' + rIcon + '" fill="hsl(' + hue + ' 75% 92%)" stroke="hsl(' + hue + ' 55% 55%)" stroke-width="2"></circle>' +
@@ -932,7 +1062,7 @@
 
   function buildLegend(){
     legendGrid.innerHTML = ANIMALS.map(function(a){
-      var name = lang === 'de' ? a.de : a.en;
+      var name = a[lang] || a.en;
       return '<div class="legend-item"><span class="le-emoji">' + a.emoji + '</span>' +
         '<span class="le-name">' + esc(name) + '</span>' +
         '<span class="le-years">' + a.years.join(', ') + '</span></div>';
@@ -941,7 +1071,7 @@
 
   // ---------- form population ----------
   function populateMonths(){
-    var names = MONTH_NAMES[lang];
+    var names = MONTH_NAMES[lang] || MONTH_NAMES.en;
     var current = monthSel.value ? parseInt(monthSel.value, 10) : 6;
     monthSel.innerHTML = names.map(function(name, i){
       return '<option value="' + (i + 1) + '">' + esc(name) + '</option>';
@@ -970,15 +1100,17 @@
   function renderResult(animal, sign){
     lastResult = { animal: animal, sign: sign };
     var t = UI[lang];
-    var animalName = lang === 'de' ? animal.de : animal.en;
-    var signName = lang === 'de' ? sign.de : sign.en;
-    var signRange = lang === 'de' ? sign.range : sign.rangeEn;
-    var animalTraits = lang === 'de' ? animal.traitsDe : animal.traitsEn;
-    var signTraits = lang === 'de' ? sign.traitsDe : sign.traitsEn;
-    var animalDesc = lang === 'de' ? animal.descDe : animal.descEn;
-    var signDesc = lang === 'de' ? sign.descDe : sign.descEn;
-    var yearFortune = lang === 'de' ? animal.fortuneDe : animal.fortuneEn;
-    var monthFortune = lang === 'de' ? sign.monthlyDe : sign.monthlyEn;
+    var SUF = { zh: 'Zh', en: 'En', de: 'De' };
+    var suf = SUF[lang] || 'En';
+    var animalName = animal[lang] || animal.en;
+    var signName = sign[lang] || sign.en;
+    var signRange = ({de: sign.range, en: sign.rangeEn, zh: sign.rangeZh})[lang] || sign.rangeEn;
+    var animalTraits = animal['traits' + suf] || animal.traitsEn;
+    var signTraits = sign['traits' + suf] || sign.traitsEn;
+    var animalDesc = animal['desc' + suf] || animal.descEn;
+    var signDesc = sign['desc' + suf] || sign.descEn;
+    var yearFortune = animal['fortune' + suf] || animal.fortuneEn;
+    var monthFortune = sign['monthly' + suf] || sign.monthlyEn;
 
     var chips = function(list){
       return list.map(function(x){ return '<span class="trait-chip">' + esc(x) + '</span>'; }).join('');
@@ -1031,7 +1163,9 @@
   function applyI18n(){
     var t = UI[lang];
     document.documentElement.lang = lang;
-    langBtn.textContent = t.langBtnLabel;
+    document.querySelectorAll('.lang-switch .lang-btn').forEach(function(btn){
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+    });
     document.querySelectorAll('[data-i18n]').forEach(function(el){
       var key = el.getAttribute('data-i18n');
       if (t[key] === undefined) return;
@@ -1078,8 +1212,10 @@
     }
   }
 
-  langBtn.addEventListener('click', function(){
-    setLang(lang === 'de' ? 'en' : 'de');
+  document.querySelectorAll('.lang-switch .lang-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      setLang(btn.getAttribute('data-lang'));
+    });
   });
 
   // ---------- init ----------
