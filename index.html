@@ -5,6 +5,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zodiac &amp; Stars – Chinesisches Tierkreiszeichen &amp; Sternzeichen Rechner</title>
 <meta name="description" content="Zodiac & Stars: Gib dein Geburtsdatum ein und entdecke dein chinesisches Tierkreiszeichen (1900–2026), dein westliches Sternzeichen und einen verspielten Jahres- und Monatsausblick. Zweisprachig Deutsch/Englisch.">
+<!-- Structured data: FAQPage (English defaults; keep in sync with the "en" faq array below) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Does this account for the Chinese New Year cutoff, or just the calendar year?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Not quite — this tool assigns the zodiac animal purely by calendar year (Gregorian), not by the actual Chinese lunar new year date. Someone born in January or early February can, under traditional reckoning, still belong to the previous year's animal." }
+    },
+    {
+      "@type": "Question",
+      "name": "What birth years does this support?",
+      "acceptedAnswer": { "@type": "Answer", "text": "1900 through 2026. Dates outside that range can't currently be calculated." }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does my star sign differ from what another app shows me?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The exact date boundaries of the twelve star signs vary by a day or two depending on the source, because they follow the sun's actual astronomical position. This tool uses commonly used, fixed date ranges." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is this meant to be taken as serious astrology or fortune-telling?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No, explicitly not. All text is based on traditional folklore for entertainment only — not scientific astrology or astronomy." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this tool save my birth date?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. The entire calculation runs locally in your browser; your birth date is never sent to a server." }
+    }
+  ]
+}
+</script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -293,11 +327,27 @@
     font-size:14px; color:var(--ink-soft);
   }
 
+  .faq-list{ margin-top:4px; }
+  .faq-item{
+    border:1px solid var(--border); border-radius:12px; background:var(--surface-2); margin-bottom:8px;
+  }
+  .faq-item summary{
+    cursor:pointer; padding:13px 16px; font-size:15px; font-weight:700; color:var(--ink);
+    display:flex; align-items:center; gap:8px; list-style:none;
+  }
+  .faq-item summary::-webkit-details-marker{ display:none; }
+  .faq-item summary .chev{ transition:transform .15s ease; color:var(--ink-soft); font-size:12px; }
+  .faq-item[open] summary .chev{ transform:rotate(90deg); }
+  .faq-item .faq-a{ padding:0 16px 15px; font-size:14px; color:var(--ink-soft); line-height:1.6; }
+
   footer.site{
     margin-top:56px; padding-top:24px; border-top:1px solid var(--border);
     display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
     font-size:12.5px; color:var(--ink-soft);
   }
+  .footer-links{ display:flex; flex-wrap:wrap; gap:14px; }
+  .footer-links a{ color:var(--ink-soft); text-decoration:none; }
+  .footer-links a:hover{ color:var(--ink); text-decoration:underline; }
 
   .tip-btn{
     position:fixed; right:18px; bottom:18px; z-index:40;
@@ -432,6 +482,12 @@
       <p data-i18n="how4">Und schließlich: Datenschutz ist keine nachträgliche Ergänzung, sondern Teil der Architektur. Weil die gesamte Logik im Browser läuft, verlässt dein Geburtsdatum niemals dein Gerät — es wird nicht an einen Server gesendet, nicht gespeichert und beim Neuladen der Seite vollständig vergessen. Genau diese Einfachheit — eine einzelne HTML-Datei, keine Datenbank, kein Tracking der Geburtsdaten — war von Anfang an das Ziel: ein kleines, schnelles, in sich geschlossenes Werkzeug, das genauso funktioniert, ob es zehn oder zehntausend Mal am Tag aufgerufen wird.</p>
     </section>
 
+    <section class="seo article" id="faq">
+      <h2 data-i18n="faqHeading">Häufig gestellte Fragen</h2>
+      <p class="lede" data-i18n="faqLede">Kurze Antworten auf die Fragen, die am häufigsten gestellt werden.</p>
+      <div class="faq-list" id="faqList"></div>
+    </section>
+
     <div class="ad-slot banner" style="margin-left:0;margin-right:0;padding:0;max-width:none;">
       <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4830421367394194" data-ad-slot="9823302082" data-ad-format="auto" data-full-width-responsive="true"></ins>
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
@@ -439,7 +495,12 @@
 
     <footer class="site">
       <span data-i18n="footerText">© <span id="year"></span> Zodiac &amp; Stars · Nur zur Unterhaltung, keine astrologische Beratung</span>
-      <span>Zodiac &amp; Stars</span>
+      <nav class="footer-links">
+        <a href="https://junpingkoch-web.github.io/about.html">About</a>
+        <a href="https://junpingkoch-web.github.io/contact.html">Contact</a>
+        <a href="https://junpingkoch-web.github.io/privacy.html">Privacy</a>
+        <a href="https://junpingkoch-web.github.io/terms.html">Terms</a>
+      </nav>
     </footer>
   </main>
 
@@ -658,7 +719,17 @@
       how3:'Die zweisprachige Umsetzung (Deutsch/Englisch) war von Anfang an Teil des Konzepts, nicht nachträglich hinzugefügt — alle Texte, Eigenschaften und Prognosen existieren komplett getrennt für beide Sprachen, damit beim Umschalten nichts halbübersetzt wirkt. Genauso bewusst ist die Farb- und Formsprache: warme Pastelltöne, abgerundete Karten und verspielte Emojis sollen signalisieren, dass es hier um Unterhaltung geht, nicht um seriöse Beratung — ein Punkt, der zusätzlich im Disclaimer weiter oben festgehalten ist.',
       how4:'Und schließlich: Datenschutz ist keine nachträgliche Ergänzung, sondern Teil der Architektur. Weil die gesamte Logik im Browser läuft, verlässt dein Geburtsdatum niemals dein Gerät — es wird nicht an einen Server gesendet, nicht gespeichert und beim Neuladen der Seite vollständig vergessen. Genau diese Einfachheit — eine einzelne HTML-Datei, keine Datenbank, kein Tracking der Geburtsdaten — war von Anfang an das Ziel: ein kleines, schnelles, in sich geschlossenes Werkzeug, das genauso funktioniert, ob es zehn oder zehntausend Mal am Tag aufgerufen wird.',
       footerText:'© <span id="year"></span> Zodiac &amp; Stars · Nur zur Unterhaltung, keine astrologische Beratung',
-      tipBtn:'☕ Spendier einen Kaffee'
+      tipBtn:'☕ Spendier einen Kaffee',
+      faqHeading:'Häufig gestellte Fragen',
+      faqLede:'Kurze Antworten auf die Fragen, die am häufigsten gestellt werden.',
+      faq:[
+        {q:'Wird das chinesische Neujahr berücksichtigt, oder zählt nur das Kalenderjahr?', a:'Nicht ganz — dieses Tool ordnet das Tierkreiszeichen ausschließlich anhand des Kalenderjahres zu (gregorianischer Kalender), nicht anhand des tatsächlichen chinesischen Mondneujahrs. Wer z. B. im Januar oder frühen Februar geboren ist, gehört nach traditioneller Zählung manchmal noch zum Vorjahres-Tier, wenn das chinesische Neujahr erst später im Monat liegt. Für eine verspielte Unterhaltungs-App ist das eine bewusste Vereinfachung.'},
+        {q:'Welche Geburtsjahre werden unterstützt?', a:'1900 bis 2026. Außerhalb dieses Bereichs lässt sich aktuell kein Ergebnis berechnen.'},
+        {q:'Warum unterscheidet sich mein Sternzeichen von dem, das eine andere App mir zeigt?', a:'Die genauen Datumsgrenzen der zwölf Sternzeichen schwanken je nach Quelle um ein bis zwei Tage, weil sie sich nach dem tatsächlichen astronomischen Sonnenstand richten. Dieses Tool nutzt die gängigen, feststehenden Datumsspannen der westlichen Astrologie — bei einer Geburt genau an einer Grenze kann das Ergebnis daher leicht abweichen.'},
+        {q:'Ist das hier ernstgemeinte Astrologie oder Wahrsagerei?', a:'Nein, ausdrücklich nicht. Wie im Disclaimer oben erklärt, basieren alle Texte auf traditionellem Volksglauben und dienen ausschließlich der Unterhaltung — nicht auf wissenschaftlicher Astrologie oder Astronomie.'},
+        {q:'Warum gibt es dieses Tool nur auf Deutsch und Englisch?', a:'Zodiac &amp; Stars ist eines der früheren Tools in dieser Sammlung und wurde von Anfang an zweisprachig (DE/EN) konzipiert. Andere, später gebaute Tools auf dieser Seite nutzen ein dreisprachiges Konzept (ZH/EN/DE) — beide Ansätze bestehen aktuell parallel.'},
+        {q:'Speichert dieses Tool mein Geburtsdatum?', a:'Nein. Die gesamte Berechnung läuft lokal in deinem Browser; dein Geburtsdatum wird nie an einen Server gesendet und beim Neuladen der Seite vollständig vergessen.'}
+      ]
     },
     en:{
       langBtnLabel:'🌐 DE',
@@ -713,7 +784,17 @@
       how3:'The bilingual setup (German/English) was part of the concept from the start, not bolted on afterward — every piece of text, every trait and every forecast exists completely separately for both languages, so nothing looks half-translated when you switch. The colour and shape language is just as deliberate: warm pastel tones, rounded cards and playful emoji are meant to signal that this is entertainment, not serious advice — a point also spelled out in the disclaimer above.',
       how4:'And finally: privacy isn\'t an afterthought here, it\'s part of the architecture. Because all the logic runs in your browser, your birth date never leaves your device — it isn\'t sent to a server, isn\'t stored anywhere, and is completely forgotten the moment you reload the page. That simplicity — a single HTML file, no database, no tracking of birth data — was the goal from day one: a small, fast, self-contained tool that works exactly the same whether it\'s opened ten times a day or ten thousand.',
       footerText:'© <span id="year"></span> Zodiac &amp; Stars · For entertainment only, not astrological advice',
-      tipBtn:'☕ Buy me a coffee'
+      tipBtn:'☕ Buy me a coffee',
+      faqHeading:'Frequently Asked Questions',
+      faqLede:'Quick answers to the questions people ask most often.',
+      faq:[
+        {q:'Does this account for the Chinese New Year cutoff, or just the calendar year?', a:'Not quite — this tool assigns the zodiac animal purely by calendar year (Gregorian), not by the actual Chinese lunar new year date. Someone born in January or early February can, under traditional reckoning, still belong to the previous year\'s animal if Chinese New Year falls later that month. For a playful entertainment app that\'s a deliberate simplification.'},
+        {q:'What birth years does this support?', a:'1900 through 2026. Dates outside that range can\'t currently be calculated.'},
+        {q:'Why does my star sign differ from what another app shows me?', a:'The exact date boundaries of the twelve star signs vary by a day or two depending on the source, because they follow the sun\'s actual astronomical position. This tool uses the commonly used, fixed date ranges from Western astrology — if you were born right on a boundary, your result may differ slightly from another source.'},
+        {q:'Is this meant to be taken as serious astrology or fortune-telling?', a:'No, explicitly not. As stated in the disclaimer above, all text is based on traditional folklore for entertainment only — not scientific astrology or astronomy.'},
+        {q:'Why is this tool only in German and English?', a:'Zodiac &amp; Stars is one of the earlier tools in this collection and was designed bilingual (DE/EN) from the start. Other, later tools on this site use a trilingual (ZH/EN/DE) approach — both currently coexist.'},
+        {q:'Does this tool save my birth date?', a:'No. The entire calculation runs locally in your browser; your birth date is never sent to a server and is completely forgotten when you reload the page.'}
+      ]
     }
   };
 
@@ -960,6 +1041,26 @@
       } else {
         el.innerHTML = t[key];
       }
+    });
+    renderFAQ();
+  }
+
+  var faqListEl = document.getElementById('faqList');
+  function renderFAQ(){
+    if (!faqListEl) return;
+    var faq = (UI[lang] && UI[lang].faq) || [];
+    faqListEl.innerHTML = '';
+    faq.forEach(function(item){
+      var details = document.createElement('details');
+      details.className = 'faq-item';
+      var summary = document.createElement('summary');
+      summary.innerHTML = '<span class="chev">▶</span> <span>' + item.q + '</span>';
+      var body = document.createElement('div');
+      body.className = 'faq-a';
+      body.innerHTML = item.a;
+      details.appendChild(summary);
+      details.appendChild(body);
+      faqListEl.appendChild(details);
     });
   }
 
