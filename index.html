@@ -188,19 +188,15 @@
     text-wrap:balance;
   }
 
-  .ad-slot{ max-width:920px; margin:28px auto; padding:0 20px; }
-  .ad-slot .ad-box{
+  .ad-slot{
+    max-width:920px; margin:28px auto; padding:14px 20px;
     border:1.5px dashed var(--border); border-radius:var(--radius);
-    background:var(--surface-2); color:var(--ink-soft);
-    font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
-    display:flex; align-items:center; justify-content:center; text-align:center;
-    padding:14px; min-height:90px;
+    background:var(--surface-2); min-height:90px;
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
   }
-  .ad-slot.in-content .ad-box{ min-height:110px; }
-  .ad-slot .ad-box small{
-    display:block; font-family:var(--font-body); text-transform:none; letter-spacing:0;
-    font-size:12px; margin-top:4px; opacity:.85;
-  }
+  .ad-slot.in-content{ min-height:110px; }
+  .ad-slot ins.adsbygoogle{ width:100%; }
 
   .tool-card{
     background:var(--surface); border:1px solid var(--border); border-radius:20px;
