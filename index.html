@@ -1170,6 +1170,11 @@
     var animal = getAnimal(year);
     var sign = getSign(month, day);
     renderResult(animal, sign);
+    // Jump to the result: on a page this long, "计算" alone leaves the user
+    // staring at the same form with no clue anything happened below the fold.
+    requestAnimationFrame(function(){
+      resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   }
 
   calcBtn.addEventListener('click', runCalculate);
