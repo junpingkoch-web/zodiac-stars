@@ -521,8 +521,33 @@
 
     <section class="seo article" id="faq">
       <h2 data-i18n="faqHeading">Häufig gestellte Fragen</h2>
-      <p class="lede" data-i18n="faqLede">Kurze Antworten auf die Fragen, die am häufigsten gestellt werden.</p>
-      <div class="faq-list" id="faqList"></div>
+      <p class="lede" data-i18n="faqLede">关于最常被问到的问题，这里给出简短的回答。</p>
+      <div class="faq-list" id="faqList">
+        <details class="faq-item">
+          <summary><span class="chev">▶</span> <span>是否考虑了农历新年的分界，还是只按公历年份计算？</span></summary>
+          <div class="faq-a">并不完全考虑——这个工具只按公历年份来判定生肖，并不是按照实际的中国农历新年日期。比如在1月或2月初出生的人，如果当年的农历新年要到月底才到，按照传统算法，他们有时其实还算上一年的生肖。对于一个图个好玩的娱乐应用来说，这是一种刻意的简化处理。</div>
+        </details>
+        <details class="faq-item">
+          <summary><span class="chev">▶</span> <span>支持哪些出生年份？</span></summary>
+          <div class="faq-a">支持 1900 年到 2026 年。超出这个范围目前无法计算结果。</div>
+        </details>
+        <details class="faq-item">
+          <summary><span class="chev">▶</span> <span>为什么我的星座和其他 App 算出来的不一样？</span></summary>
+          <div class="faq-a">十二星座的具体日期分界，不同来源之间可能相差一两天，因为它们依据的是太阳实际的天文位置，而这个位置每年都会有细微偏移。本工具使用的是西方占星学里最常见的固定日期区间——如果你恰好出生在分界日附近，结果可能会和其他来源略有出入。</div>
+        </details>
+        <details class="faq-item">
+          <summary><span class="chev">▶</span> <span>这个工具是严肃的占星或算命吗？</span></summary>
+          <div class="faq-a">不是，明确不是。正如上方免责声明所说，所有文字内容都基于传统民间文化，仅供娱乐——并非科学占星或天文学依据。</div>
+        </details>
+        <details class="faq-item">
+          <summary><span class="chev">▶</span> <span>为什么现在也支持中文了？</span></summary>
+          <div class="faq-a">Zodiac &amp; Stars 最初只支持德文和英文，现在已经和本站其他工具一样统一为中/英/德三语，可以随时用页面上方的语言按钮切换。</div>
+        </details>
+        <details class="faq-item">
+          <summary><span class="chev">▶</span> <span>这个工具会保存我的出生日期吗？</span></summary>
+          <div class="faq-a">不会。所有计算都在你的浏览器本地完成；你的出生日期不会被发送到任何服务器，刷新页面后也会被彻底遗忘。</div>
+        </details>
+      </div>
     </section>
 
     <div class="ad-slot banner" style="margin-left:0;margin-right:0;padding:0;max-width:none;">
