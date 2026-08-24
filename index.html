@@ -294,6 +294,9 @@
     text-align:center; color:var(--ink-soft); font-size:14px; padding:18px 10px;
     border:1.5px dashed var(--border); border-radius:14px; background:var(--surface-2);
   }
+  .date-form-hero .placeholder-note{
+    margin:14px 0 0; padding:0; border:none; background:none; font-size:13px;
+  }
   .result-card{
     background:linear-gradient(160deg, var(--accent-tint), var(--surface) 55%);
     border:1px solid var(--border); border-radius:18px; padding:24px;
@@ -434,6 +437,7 @@
           </div>
           <button type="button" class="btn primary" id="calcBtn" data-i18n="calcBtn">Berechnen ✨</button>
         </div>
+        <p class="placeholder-note" id="placeholderNote" data-i18n="placeholderNote">Wähle dein Geburtsdatum und klicke auf „Berechnen ✨“, um dein Ergebnis zu sehen.</p>
       </div>
 
       <div class="wheel-wrap">
@@ -444,9 +448,7 @@
       <h2 class="legend-heading" data-i18n="legendHeading">Geburtsjahre 1900–2026 auf einen Blick</h2>
       <div class="legend-grid" id="legendGrid"></div>
 
-      <div id="results">
-        <p class="placeholder-note" id="placeholderNote" data-i18n="placeholderNote">Wähle dein Geburtsdatum und klicke auf „Berechnen ✨“, um dein Ergebnis zu sehen.</p>
-      </div>
+      <div id="results"></div>
     </div>
   </main>
 
@@ -1192,11 +1194,6 @@
       '</div>';
   }
 
-  function showPlaceholder(){
-    var t = UI[lang];
-    resultsEl.innerHTML = '<p class="placeholder-note">' + esc(t.placeholderNote) + '</p>';
-  }
-
   function runCalculate(){
     var year = parseInt(yearSel.value, 10);
     var month = parseInt(monthSel.value, 10);
@@ -1263,8 +1260,6 @@
     buildLegend();
     if (lastResult){
       renderResult(lastResult.animal, lastResult.sign);
-    } else {
-      showPlaceholder();
     }
   }
 
@@ -1281,7 +1276,6 @@
   applyI18n();
   buildWheel();
   buildLegend();
-  showPlaceholder();
 })();
 </script>
 </body>
