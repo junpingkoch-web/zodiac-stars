@@ -1201,6 +1201,7 @@
     var animal = getAnimal(year);
     var sign = getSign(month, day);
     renderResult(animal, sign);
+    if (typeof gtag === "function") gtag("event", "tool_result_generated", { tool_name: "zodiac-stars" });
     // Jump to the result: on a page this long, "计算" alone leaves the user
     // staring at the same form with no clue anything happened below the fold.
     requestAnimationFrame(function(){
