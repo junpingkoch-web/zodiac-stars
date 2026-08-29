@@ -18,8 +18,9 @@
 - 本地预览：共享配置在 `C:\Users\junpi\.claude\.claude\launch.json`（先确认这个仓库是否已经在里面注册了端口，没有的话要新增一条）
 
 ## 部署流程
-- 改完直接 commit + push 到 `main`
+- 改完直接 commit + push 到 `main`——但 push 前先 `git fetch origin` 确认没有别的会话推过新提交，且每次实际执行 push 前仍要跟用户确认一次，这条约定不构成"以后可以不问自动 push"的预授权。
 - Commit 作者身份：`Junping Koch <junping.koch@gmail.com>`，仓库单独设置
+- **Commit message 风格**：纯英文，单行摘要 + 说明性段落（讲清楚改了什么、为什么），不用 `fix(ui):`/`feat:` 这类 Conventional Commits 前缀，也不用 bullet list——跟现有 `git log` 里的历史提交保持一致（2026-08-29 确认）。
 
 ## 明确禁止的事
 - 不要把单文件拆成 `index.html`/`style.css`/`script.js` 三件套，除非被明确要求——这是这个工具家族里单文件类工具的既定选择
