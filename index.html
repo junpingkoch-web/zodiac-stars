@@ -83,10 +83,14 @@
       document.addEventListener('DOMContentLoaded', function(){
         var b=document.createElement('div');
         b.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#20242e;color:#eef1f6;padding:14px 18px;font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;box-shadow:0 -2px 12px rgba(0,0,0,.25);';
-        b.innerHTML='<span style="flex:1;min-width:240px;">This site uses cookies for analytics and to show ads. · Diese Website nutzt Cookies für Statistik und Werbung.</span><span style="display:flex;gap:8px;flex-shrink:0;"><button id="cc-reject" style="background:transparent;border:1px solid #5c6472;color:#eef1f6;padding:8px 14px;border-radius:6px;cursor:pointer;">Essential only · Nur essenziell</button><button id="cc-accept" style="background:#2f6fed;border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:600;">Accept · Akzeptieren</button></span>';
+        b.innerHTML='<span style="flex:1;min-width:240px;">This site uses cookies for analytics and to show ads. · Diese Website nutzt Cookies für Statistik und Werbung.</span><span style="display:flex;gap:8px;flex-shrink:0;"><button id="cc-reject" style="background:transparent;border:1px solid #5c6472;color:#eef1f6;padding:12px 16px;min-height:44px;border-radius:6px;cursor:pointer;">Essential only · Nur essenziell</button><button id="cc-accept" style="background:#2f6fed;border:none;color:#fff;padding:12px 16px;min-height:44px;border-radius:6px;cursor:pointer;font-weight:600;">Accept · Akzeptieren</button></span>';
         document.body.appendChild(b);
-        document.getElementById('cc-accept').onclick=function(){ localStorage.setItem(KEY,'granted'); apply(true); b.remove(); };
-        document.getElementById('cc-reject').onclick=function(){ localStorage.setItem(KEY,'denied'); b.remove(); };
+        // the banner overlaps the fixed tip-btn (both bottom-anchored) — hide it while the banner is up
+        var ccTipBtn = document.getElementById('tipBtn');
+        if (ccTipBtn) ccTipBtn.style.display = 'none';
+        function ccRestoreTipBtn(){ if (ccTipBtn) ccTipBtn.style.display = ''; }
+        document.getElementById('cc-accept').onclick=function(){ localStorage.setItem(KEY,'granted'); apply(true); b.remove(); ccRestoreTipBtn(); };
+        document.getElementById('cc-reject').onclick=function(){ localStorage.setItem(KEY,'denied'); b.remove(); ccRestoreTipBtn(); };
       });
     }
   })();
@@ -181,6 +185,7 @@
     font-family:var(--font-mono); font-size:12px; font-weight:700;
     padding:7px 12px; border-radius:999px; cursor:pointer;
     transition:background .15s ease, color .15s ease;
+    min-height:44px; display:inline-flex; align-items:center; justify-content:center;
   }
   .lang-btn.active{ background:var(--accent); color:#fff; }
   .lang-btn:not(.active):hover{ background:var(--accent-tint); color:var(--accent-strong); }
@@ -232,8 +237,27 @@
   @media (max-width:560px){ .tool-card{ padding:20px 16px; } }
 
   /* wheel */
-  .wheel-wrap{ max-width:920px; margin:0 auto 8px; position:relative; }
-  .wheel-wrap svg{ width:100%; height:auto; display:block; }
+  .wheel-wrap{
+    max-width:920px; margin:0 auto 8px; position:relative; overflow-x:auto; -webkit-overflow-scrolling:touch;
+    /* When the wheel is wider than its box (see min-width below), this fades the
+       cropped edges instead of a hard cut — a visual cue that there's more to
+       scroll to, rather than looking like a broken render. Centering the scroll
+       position in JS (see centerWheelScroll()) means the visible slice starts
+       mid-wheel rather than an arbitrary left edge. */
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 24px, black calc(100% - 24px), transparent);
+    mask-image: linear-gradient(90deg, transparent, black 24px, black calc(100% - 24px), transparent);
+  }
+  /* The wheel's text is baked into the SVG at fixed viewBox units (0 0 1790 1790),
+     so scaling the whole SVG down shrinks the smallest labels (year tiers, animal
+     names) to a few px — illegible. min-width sets a legible floor unconditionally
+     (not gated to a viewport breakpoint — an earlier version keyed this to
+     max-width:640px, but the wheel's rendered width is smaller than the viewport by
+     the .shell/.tool-card padding, so a fixed viewport threshold left a band of
+     tablet-sized viewports worse off than either side of it). Below 760px of actual
+     available width, width:100% would compute smaller than min-width and the SVG
+     scrolls horizontally instead of shrinking further; at or above 760px, min-width
+     has no effect and it scales normally up to .wheel-wrap's own 920px max-width. */
+  .wheel-wrap svg{ width:100%; min-width:760px; height:auto; display:block; }
   .wheel-caption{
     text-align:center; font-size:12.5px; color:var(--ink-soft); margin:6px 0 0;
     font-family:var(--font-mono); letter-spacing:.03em;
@@ -380,7 +404,7 @@
     font-size:12.5px; color:var(--ink-soft);
   }
   .footer-links{ display:flex; flex-wrap:wrap; gap:14px; }
-  .footer-links a{ color:var(--ink-soft); text-decoration:none; }
+  .footer-links a{ color:var(--ink-soft); text-decoration:none; padding:12px 6px; display:inline-block; }
   .footer-links a:hover{ color:var(--ink); text-decoration:underline; }
 
   .tip-btn{
@@ -390,9 +414,10 @@
     font-family:var(--font-body); font-weight:700; font-size:14px;
     padding:11px 16px; border-radius:999px; box-shadow:var(--shadow);
     border:1px solid rgba(0,0,0,0.06);
+    min-height:44px; box-sizing:border-box;
   }
   .tip-btn:hover{ background:var(--cta-strong); }
-  @media (max-width:560px){ .tip-btn{ right:14px; bottom:14px; padding:10px 14px; font-size:13px; } }
+  @media (max-width:560px){ .tip-btn{ right:14px; bottom:14px; padding:12px 16px; font-size:13px; } }
 </style>
 </head>
 <body>
@@ -401,9 +426,9 @@
 
   <div class="topbar">
     <div class="lang-switch" role="group" aria-label="Language">
-      <button class="lang-btn" data-lang="zh" type="button">中文</button>
-      <button class="lang-btn" data-lang="en" type="button">EN</button>
-      <button class="lang-btn" data-lang="de" type="button">DE</button>
+      <button class="lang-btn" data-lang="zh" type="button" aria-pressed="false">中文</button>
+      <button class="lang-btn" data-lang="en" type="button" aria-pressed="false">EN</button>
+      <button class="lang-btn" data-lang="de" type="button" aria-pressed="false">DE</button>
     </div>
   </div>
 
@@ -1082,14 +1107,14 @@
       var wheelYears = pickWheelYears(a.years);
       wheelYears.forEach(function(yr, yi){
         var pYear = polar(cx, cy, yearRadii[yi], mid);
-        svgParts.push('<text x="' + pYear.x + '" y="' + pYear.y + '" font-size="18" font-weight="800" fill="var(--accent-strong)" font-family="var(--font-mono)" text-anchor="middle" dominant-baseline="middle">' + yr + '</text>');
+        svgParts.push('<text x="' + pYear.x + '" y="' + pYear.y + '" font-size="22" font-weight="800" fill="var(--accent-strong)" font-family="var(--font-mono)" text-anchor="middle" dominant-baseline="middle">' + yr + '</text>');
       });
     }
 
     // center circle
     svgParts.push('<circle cx="' + cx + '" cy="' + cy + '" r="' + (rInner - 4) + '" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"></circle>');
     svgParts.push('<text x="' + cx + '" y="' + (cy - 13) + '" font-size="20" text-anchor="middle" dominant-baseline="middle">🔮</text>');
-    svgParts.push('<text x="' + cx + '" y="' + (cy + 13) + '" font-size="11" fill="var(--ink-soft)" text-anchor="middle" dominant-baseline="middle" font-family="var(--font-mono)">1900-2026</text>');
+    svgParts.push('<text x="' + cx + '" y="' + (cy + 13) + '" font-size="14" fill="var(--ink-soft)" text-anchor="middle" dominant-baseline="middle" font-family="var(--font-mono)">1900-2026</text>');
 
     // outer ring: western zodiac icons, offset by 15deg, with a visible name label
     var rIconRing = 635, rIcon = 46, rIconLabel = 780;
@@ -1111,6 +1136,25 @@
     }
 
     wheelSvg.innerHTML = svgParts.join('');
+    centerWheelScroll();
+  }
+
+  // When the wheel is wider than its box (see .wheel-wrap svg's min-width),
+  // start the visible slice centred on the wheel rather than at the arbitrary
+  // left edge scrollLeft defaults to — paired with the fade-mask in CSS.
+  function centerWheelScroll(){
+    var wrap = wheelSvg.closest('.wheel-wrap');
+    if (!wrap) return;
+    // A single rAF can still fire before layout has settled on first paint
+    // (this runs synchronously during initial script execution) — nest two so
+    // the measurement happens after a layout pass has actually completed.
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        if (wrap.scrollWidth > wrap.clientWidth){
+          wrap.scrollLeft = (wrap.scrollWidth - wrap.clientWidth) / 2;
+        }
+      });
+    });
   }
 
   function buildLegend(){
@@ -1218,7 +1262,9 @@
     var t = UI[lang];
     document.documentElement.lang = lang;
     document.querySelectorAll('.lang-switch .lang-btn').forEach(function(btn){
-      btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+      var isActive = btn.getAttribute('data-lang') === lang;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-pressed', String(isActive));
     });
     document.querySelectorAll('[data-i18n]').forEach(function(el){
       var key = el.getAttribute('data-i18n');
